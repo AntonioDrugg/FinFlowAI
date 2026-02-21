@@ -1,0 +1,21 @@
+# FinFlowAI — Python Dependencies
+
+# Web server
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# AI / LLM
+openai>=1.0.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# HTTP requests
+requests>=2.31.0
+
+# Data visualisation (for reports)
+matplotlib>=3.7.0
