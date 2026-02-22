@@ -8,7 +8,7 @@ so uniqueness can be enforced at the database level on the triple
 (space, login, password_hash).
 
 CLI Usage:
-    python execution/user_manager.py add    --space acme --login alice --password secret
+    python execution/user_manager.py add    --space acme --login alice --password secret --name Alice
     python execution/user_manager.py verify --space acme --login alice --password secret
     python execution/user_manager.py list   [--space acme]
     python execution/user_manager.py delete --id 3
@@ -54,21 +54,22 @@ def normalise(value: str) -> str:
 
 # ── CRUD ───────────────────────────────────────────────────────────────────────
 
-def add_user(space: str, login: str, password: str) -> dict:
+def add_user(space: str, login: str, password: str, name: str = "") -> dict:
     """
     Add a new credential triple. Returns the new record on success.
     Raises ValueError if the exact triple already exists.
     """
     space = normalise(space)
     login = normalise(login)
+    name  = name.strip()
     password_hash = hash_password(password)
 
     con = get_connection()
     try:
         cur = con.cursor()
         cur.execute(
-            "INSERT INTO users (space, login, password_hash) VALUES (?, ?, ?)",
-            (space, login, password_hash),
+            "INSERT INTO users (space, login, password_hash, name) VALUES (?, ?, ?, ?)",
+            (space, login, password_hash, name),
         )
         con.commit()
         row_id = cur.lastrowid
@@ -108,12 +109,12 @@ def list_users(space: str | None = None) -> list[dict]:
         cur = con.cursor()
         if space:
             cur.execute(
-                "SELECT id, space, login, created_at FROM users WHERE space = ? ORDER BY space, login",
+                "SELECT id, space, login, name, created_at FROM users WHERE space = ? ORDER BY space, login",
                 (normalise(space),),
             )
         else:
             cur.execute(
-                "SELECT id, space, login, created_at FROM users ORDER BY space, login"
+                "SELECT id, space, login, name, created_at FROM users ORDER BY space, login"
             )
         return [dict(row) for row in cur.fetchall()]
     finally:
@@ -143,6 +144,7 @@ def main():
     p_add.add_argument("--space",    required=True)
     p_add.add_argument("--login",    required=True)
     p_add.add_argument("--password", required=True)
+    p_add.add_argument("--name",     default="", help="Display name for the user")
 
     # verify
     p_ver = sub.add_parser("verify", help="Check if a credential triple exists")
@@ -162,8 +164,8 @@ def main():
 
     if args.command == "add":
         try:
-            record = add_user(args.space, args.login, args.password)
-            print(f"Added: id={record['id']}  space={record['space']}  login={record['login']}")
+            record = add_user(args.space, args.login, args.password, args.name)
+            print(f"Added: id={record['id']}  space={record['space']}  login={record['login']}  name={record['name']}")
         except ValueError as e:
             print(f"DUPLICATE: {e}")
             sys.exit(1)
@@ -178,10 +180,10 @@ def main():
         if not rows:
             print("No records found.")
         else:
-            print(f"{'ID':<5} {'SPACE':<20} {'LOGIN':<20} {'CREATED'}")
-            print("-" * 65)
+            print(f"{'ID':<5} {'SPACE':<20} {'LOGIN':<30} {'NAME':<20} {'CREATED'}")
+            print("-" * 85)
             for r in rows:
-                print(f"{r['id']:<5} {r['space']:<20} {r['login']:<20} {r['created_at']}")
+                print(f"{r['id']:<5} {r['space']:<20} {r['login']:<30} {r['name']:<20} {r['created_at']}")
 
     elif args.command == "delete":
         deleted = delete_user(args.id)

@@ -90,12 +90,13 @@ def api_add_user():
     space    = data.get("space", "").strip()
     login    = data.get("login", "").strip()
     password = data.get("password", "").strip()
+    name     = data.get("name", "").strip()
 
     if not all([space, login, password]):
         return jsonify({"error": "All fields (space, login, password) are required."}), 400
 
     try:
-        record = um.add_user(space, login, password)
+        record = um.add_user(space, login, password, name)
         # Don't return the hash
         record.pop("password_hash", None)
         return jsonify(record), 201

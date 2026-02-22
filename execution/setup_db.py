@@ -27,6 +27,7 @@ def setup():
             space         TEXT    NOT NULL,
             login         TEXT    NOT NULL,
             password_hash TEXT    NOT NULL,
+            name          TEXT    NOT NULL DEFAULT "",
             created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(space, login, password_hash)
         );
