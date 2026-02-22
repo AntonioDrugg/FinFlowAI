@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinFlow AI — Clients</title>
+    <meta name="description" content="Manage your clients in FinFlow AI" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f5f7fa;
+            color: #1e3a4f;
+        }
+
+        /* ══════════════════════════════════════════
+       NAVBAR (identical to home)
+    ══════════════════════════════════════════ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: #ffffff;
+            border-bottom: 1px solid #eaecf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            z-index: 100;
+            box-shadow: 0 1px 8px rgba(30, 58, 79, 0.06);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #5a7080;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.18s ease, color 0.18s ease;
+            border: none;
+            background: none;
+            letter-spacing: 0.01em;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #f2f4f6;
+            color: #1e3a4f;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 22px;
+            background: #eaecf0;
+            margin: 0 8px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-logoff {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #7a95a8;
+            background: none;
+            border: 1.5px solid #e2e6ea;
+            border-radius: 8px;
+            padding: 7px 16px;
+            cursor: pointer;
+            transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+
+        .btn-logoff:hover {
+            color: #c0392b;
+            border-color: #f5c6c2;
+            background: #fff5f5;
+        }
+
+        .nav-logo img {
+            height: 54px;
+            width: auto;
+            display: block;
+        }
+
+        /* ══════════════════════════════════════════
+       SLIM WELCOME BANNER
+    ══════════════════════════════════════════ */
+        .welcome-banner {
+            background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
+            padding: 14px 48px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 52px;
+            margin-top: 68px;
+            /* below fixed navbar */
+        }
+
+        .welcome-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #3ecf8e;
+            flex-shrink: 0;
+        }
+
+        .welcome-banner span {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.90);
+        }
+
+        .welcome-banner strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* ══════════════════════════════════════════
+       PAGE LAYOUT
+    ══════════════════════════════════════════ */
+        .page-body {
+            display: flex;
+            flex-direction: column;
+            padding: 32px 48px 0;
+            gap: 24px;
+            /* fill remaining viewport */
+            height: calc(100vh - 68px - 52px);
+        }
+
+        /* ── Section label ── */
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            margin-bottom: 12px;
+        }
+
+        /* ══════════════════════════════════════════
+       TOP SECTION — Registration form
+    ══════════════════════════════════════════ */
+        .form-section {
+            background: #fff;
+            border: 1px solid #eaecf0;
+            border-radius: 14px;
+            padding: 24px 28px;
+            flex-shrink: 0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #7a95a8;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #1e3a4f;
+            background: #f7f9fb;
+            border: 1.5px solid #dce3ea;
+            border-radius: 8px;
+            padding: 10px 14px;
+            outline: none;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #b0bec8;
+        }
+
+        .form-group input:focus {
+            border-color: #3ecf8e;
+            box-shadow: 0 0 0 3px rgba(62, 207, 142, 0.12);
+            background: #fff;
+        }
+
+        .btn-register {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #3ecf8e, #2db87a);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 26px;
+            cursor: pointer;
+            transition: opacity 0.18s ease, transform 0.15s ease;
+            white-space: nowrap;
+            height: 42px;
+        }
+
+        .btn-register:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .btn-register:active {
+            transform: translateY(0);
+        }
+
+        /* Inline form message */
+        #form-msg {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            min-height: 18px;
+        }
+
+        #form-msg.ok {
+            color: #2db87a;
+        }
+
+        #form-msg.err {
+            color: #c0392b;
+        }
+
+        /* ══════════════════════════════════════════
+       BOTTOM SECTION — Client list (scrollable)
+    ══════════════════════════════════════════ */
+        .list-section {
+            background: #fff;
+            border: 1px solid #eaecf0;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            /* takes all remaining space */
+            overflow: hidden;
+            /* clip so only tbody scrolls */
+            min-height: 0;
+        }
+
+        .list-header {
+            padding: 18px 28px 14px;
+            border-bottom: 1px solid #eaecf0;
+            flex-shrink: 0;
+        }
+
+        /* Scrollable table wrapper */
+        .table-wrap {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Custom thin scrollbar */
+        .table-wrap::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-wrap::-webkit-scrollbar-track {
+            background: #f5f7fa;
+        }
+
+        .table-wrap::-webkit-scrollbar-thumb {
+            background: #d0dbe3;
+            border-radius: 3px;
+        }
+
+        .table-wrap::-webkit-scrollbar-thumb:hover {
+            background: #b0c4ce;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: #f7f9fb;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            padding: 11px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eaecf0;
+            z-index: 1;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f3f5;
+            transition: background 0.14s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f7fbf9;
+        }
+
+        tbody td {
+            padding: 13px 20px;
+            font-size: 14px;
+            color: #1e3a4f;
+            vertical-align: middle;
+        }
+
+        .td-id {
+            color: #b0bec8;
+            font-size: 12.5px;
+            font-weight: 500;
+            width: 52px;
+        }
+
+        .td-secondary {
+            color: #7a95a8;
+        }
+
+        .td-date {
+            color: #b0bec8;
+            font-size: 12.5px;
+            white-space: nowrap;
+        }
+
+        .btn-del {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #c8d5de;
+            font-size: 15px;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.15s ease, background 0.15s ease;
+            line-height: 1;
+        }
+
+        .btn-del:hover {
+            color: #c0392b;
+            background: #fff0ee;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 52px 24px;
+            color: #b0bec8;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* ══════════════════════════════════════════
+       BACK BUTTON ROW
+    ══════════════════════════════════════════ */
+        .bottom-bar {
+            padding: 16px 0 24px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-back {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #5a7080;
+            background: #fff;
+            border: 1.5px solid #dce3ea;
+            border-radius: 8px;
+            padding: 9px 22px;
+            cursor: pointer;
+            transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-back:hover {
+            color: #1e3a4f;
+            border-color: #b0bec8;
+            background: #f7f9fb;
+        }
+
+        /* Responsive */
+        @media (max-width: 720px) {
+
+            .navbar,
+            .welcome-banner,
+            .page-body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-register {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ NAVBAR ══════════════════════════════════════════════════════════ -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-links">
+            <a href="/clients.html" class="nav-link active" id="nav-clients">
+                <span class="nav-icon">👥</span>
+                <span class="label">Clients</span>
+            </a>
+            <a href="/home.html#processes" class="nav-link" id="nav-processes">
+                <span class="nav-icon">⚙️</span>
+                <span class="label">Processes</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/home.html#reports" class="nav-link" id="nav-reports">
+                <span class="nav-icon">📊</span>
+                <span class="label">Reports</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <button class="btn-logoff" id="btn-logoff" onclick="logOff()">Log Off</button>
+            <div class="nav-logo">
+                <img src="assets/logo-inline-2.png" alt="FinFlow AI" draggable="false" />
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══ SLIM WELCOME BANNER ════════════════════════════════════════════ -->
+    <div class="welcome-banner">
+        <div class="welcome-dot"></div>
+        <span>Welcome back, <strong id="user-name">—</strong></span>
+    </div>
+
+    <!-- ══ PAGE BODY ══════════════════════════════════════════════════════ -->
+    <div class="page-body">
+
+        <!-- ── TOP: New client form ───────────────────────────────────────── -->
+        <div class="form-section">
+            <div class="section-label">Register New Client</div>
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="input-name">Name</label>
+                    <input id="input-name" type="text" placeholder="Full name" autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label for="input-email">Email</label>
+                    <input id="input-email" type="email" placeholder="name@example.com" autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label for="input-phone">Phone</label>
+                    <input id="input-phone" type="tel" placeholder="+1 555 000 0000" autocomplete="off" />
+                </div>
+
+                <button class="btn-register" id="btn-register" onclick="registerClient()">Register</button>
+
+            </div>
+            <div id="form-msg"></div>
+        </div>
+
+        <!-- ── BOTTOM: Client list (scrollable) ───────────────────────────── -->
+        <div class="list-section">
+            <div class="list-header">
+                <div class="section-label">Registered Clients &nbsp;<span id="client-count"
+                        style="font-weight:400;color:#b0bec8;font-size:11px;"></span></div>
+            </div>
+            <div class="table-wrap">
+                <table id="clients-table">
+                    <thead>
+                        <tr>
+                            <th class="td-id">#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Registered</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="clients-body">
+                        <!-- rows inserted by JS -->
+                    </tbody>
+                </table>
+                <div id="empty-state" class="empty-state" style="display:none;">
+                    <div style="font-size:32px;">👤</div>
+                    <p>No clients registered yet.<br />Use the form above to add the first one.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── BOTTOM BAR: Back button ────────────────────────────────────── -->
+        <div class="bottom-bar">
+            <button class="btn-back" onclick="window.location.href='/home.html'">
+                &#8592; Back
+            </button>
+        </div>
+
+    </div><!-- /page-body -->
+
+    <script>
+        // ── Session ────────────────────────────────────────────────────────────────
+        const storedName = sessionStorage.getItem('finflow_name') || '';
+        const storedLogin = sessionStorage.getItem('finflow_login') || '';
+        document.getElementById('user-name').textContent = storedName || storedLogin || 'User';
+
+        // ── Log Off ────────────────────────────────────────────────────────────────
+        function logOff() {
+            sessionStorage.removeItem('finflow_name');
+            sessionStorage.removeItem('finflow_space');
+            sessionStorage.removeItem('finflow_login');
+            window.location.href = '/';
+        }
+
+        // ── Helpers ────────────────────────────────────────────────────────────────
+        function fmtDate(iso) {
+            if (!iso) return '—';
+            return new Date(iso).toLocaleDateString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            });
+        }
+
+        function showMsg(text, type) {
+            const el = document.getElementById('form-msg');
+            el.textContent = text;
+            el.className = type;
+            if (type === 'ok') setTimeout(() => { el.textContent = ''; el.className = ''; }, 3000);
+        }
+
+        // ── Render client table ────────────────────────────────────────────────────
+        function renderClients(clients) {
+            const body = document.getElementById('clients-body');
+            const empty = document.getElementById('empty-state');
+            const count = document.getElementById('client-count');
+
+            body.innerHTML = '';
+            count.textContent = clients.length ? `(${clients.length})` : '';
+
+            if (!clients.length) {
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            clients.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td class="td-id">${c.id}</td>
+          <td><strong>${escHtml(c.name)}</strong></td>
+          <td class="td-secondary">${escHtml(c.email || '—')}</td>
+          <td class="td-secondary">${escHtml(c.phone || '—')}</td>
+          <td class="td-date">${fmtDate(c.created_at)}</td>
+          <td>
+            <button class="btn-del" title="Delete" onclick="deleteClient(${c.id})">✕</button>
+          </td>
+        `;
+                body.appendChild(tr);
+            });
+        }
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ── Load clients from API ──────────────────────────────────────────────────
+        async function loadClients() {
+            try {
+                const res = await fetch('/api/clients');
+                const clients = await res.json();
+                renderClients(clients);
+            } catch {
+                showMsg('Could not load clients. Is the server running?', 'err');
+            }
+        }
+
+        // ── Register client ────────────────────────────────────────────────────────
+        async function registerClient() {
+            const name = document.getElementById('input-name').value.trim();
+            const email = document.getElementById('input-email').value.trim();
+            const phone = document.getElementById('input-phone').value.trim();
+
+            if (!name) { showMsg('Name is required.', 'err'); return; }
+
+            const btn = document.getElementById('btn-register');
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+
+            try {
+                const res = await fetch('/api/clients', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone }),
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    showMsg(`✓ ${data.name} registered successfully.`, 'ok');
+                    document.getElementById('input-name').value = '';
+                    document.getElementById('input-email').value = '';
+                    document.getElementById('input-phone').value = '';
+                    loadClients();
+                } else {
+                    showMsg(data.error || 'Registration failed.', 'err');
+                }
+            } catch {
+                showMsg('Server error. Please try again.', 'err');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Register';
+            }
+        }
+
+        // ── Delete client ──────────────────────────────────────────────────────────
+        async function deleteClient(id) {
+            if (!confirm('Delete this client? This cannot be undone.')) return;
+            try {
+                const res = await fetch(`/api/clients/${id}`, { method: 'DELETE' });
+                if (res.ok) loadClients();
+                else showMsg('Could not delete client.', 'err');
+            } catch {
+                showMsg('Server error.', 'err');
+            }
+        }
+
+        // ── Allow Enter key to submit form ─────────────────────────────────────────
+        ['input-name', 'input-email', 'input-phone'].forEach(id => {
+            document.getElementById(id).addEventListener('keydown', e => {
+                if (e.key === 'Enter') registerClient();
+            });
+        });
+
+        // ── Init ───────────────────────────────────────────────────────────────────
+        loadClients();
+    </script>
+
+</body>
+
+</html>

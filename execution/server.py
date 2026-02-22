@@ -21,6 +21,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 import user_manager as um
+import client_manager as cm
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 load_dotenv(BASE_DIR / ".env")
@@ -41,6 +42,11 @@ def index():
 @app.route("/home.html")
 def home():
     return send_from_directory(WEB_DIR, "home.html")
+
+
+@app.route("/clients.html")
+def clients_page():
+    return send_from_directory(WEB_DIR, "clients.html")
 
 
 @app.route("/<path:filename>")
@@ -146,6 +152,43 @@ def api_delete_user(record_id: int):
         return jsonify({"message": f"Record {record_id} deleted."}), 200
     else:
         return jsonify({"error": f"No record with id={record_id}."}), 404
+
+
+# ── API: Clients ───────────────────────────────────────────────────────────────
+
+@app.get("/api/clients")
+def api_list_clients():
+    """GET /api/clients — return all clients."""
+    return jsonify(cm.list_clients()), 200
+
+
+@app.post("/api/clients")
+def api_add_client():
+    """
+    POST /api/clients
+    Body: { "name": "...", "email": "...", "phone": "..." }
+    """
+    data  = request.get_json(silent=True) or {}
+    name  = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    phone = data.get("phone", "").strip()
+
+    if not name:
+        return jsonify({"error": "Client name is required."}), 400
+
+    try:
+        record = cm.add_client(name, email, phone)
+        return jsonify(record), 201
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.delete("/api/clients/<int:client_id>")
+def api_delete_client(client_id: int):
+    """DELETE /api/clients/<id>"""
+    if cm.delete_client(client_id):
+        return jsonify({"message": f"Client {client_id} deleted."}), 200
+    return jsonify({"error": f"No client with id={client_id}."}), 404
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
