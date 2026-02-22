@@ -106,6 +106,34 @@
             display: block;
         }
 
+        /* ── Right group: log off + logo ── */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-logoff {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #7a95a8;
+            background: none;
+            border: 1.5px solid #e2e6ea;
+            border-radius: 8px;
+            padding: 7px 16px;
+            cursor: pointer;
+            transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+        }
+
+        .btn-logoff:hover {
+            color: #c0392b;
+            border-color: #f5c6c2;
+            background: #fff5f5;
+        }
+
         /* ══════════════════════════════════════════
        PAGE BODY
     ══════════════════════════════════════════ */
@@ -302,9 +330,12 @@
 
         </div>
 
-        <!-- Right: logo (inline version) -->
-        <div class="nav-logo">
-            <img src="assets/logo-inline.png" alt="FinFlow AI" id="home-logo" draggable="false" />
+        <!-- Right: Log Off + logo -->
+        <div class="nav-right">
+            <button class="btn-logoff" id="btn-logoff" onclick="logOff()">Log Off</button>
+            <div class="nav-logo">
+                <img src="assets/logo-inline-2.png" alt="FinFlow AI" id="home-logo" draggable="false" />
+            </div>
         </div>
 
     </nav>
@@ -344,12 +375,6 @@
 
         </div>
 
-        <!-- Status bar -->
-        <div class="status-bar">
-            <div class="status-dot"></div>
-            <span>FinFlow AI is running &mdash; all systems operational.</span>
-        </div>
-
     </div>
 
     <script>
@@ -366,6 +391,14 @@
                 link.classList.add('active');
             });
         });
+
+        // ── Log Off ────────────────────────────────────────────────────────────────
+        function logOff() {
+            sessionStorage.removeItem('finflow_name');
+            sessionStorage.removeItem('finflow_space');
+            sessionStorage.removeItem('finflow_login');
+            window.location.href = '/';
+        }
     </script>
 
 </body>
