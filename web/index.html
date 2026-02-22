@@ -216,6 +216,34 @@
                 margin-bottom: 36px;
             }
         }
+
+        /* ── Status message ────────────────────────────────────────────────── */
+        #status-msg {
+            margin-top: 16px;
+            width: 100%;
+            min-height: 24px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0;
+            transition: all 0.3s ease;
+            letter-spacing: 0.01em;
+        }
+
+        #status-msg.msg-error {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+            padding: 10px 16px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+        }
+
+        #status-msg.msg-success {
+            background: rgba(30, 58, 79, 0.20);
+            color: #fff;
+            padding: 10px 16px;
+            border: 1.5px solid rgba(30, 58, 79, 0.35);
+        }
     </style>
 </head>
 
@@ -256,7 +284,61 @@
             <a href="#" id="forgot-password-link">Forgot password?</a>
         </div>
 
+        <!-- Status message banner -->
+        <div id="status-msg" role="alert" aria-live="polite"></div>
+
     </main>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const btn = document.getElementById('signin-btn');
+        const btnText = btn.querySelector('span');
+        const msg = document.getElementById('status-msg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const space = document.getElementById('space-field').value.trim();
+            const login = document.getElementById('login-field').value.trim();
+            const password = document.getElementById('password-field').value.trim();
+
+            if (!space || !login || !password) {
+                showMsg('Please fill in all fields.', 'error');
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            btnText.textContent = 'Signing in…';
+            msg.className = '';
+            msg.textContent = '';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ space, login, password }),
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    showMsg(data.message || 'Login successful!', 'success');
+                } else {
+                    showMsg(data.error || 'Login failed. Please try again.', 'error');
+                }
+            } catch (err) {
+                showMsg('Could not connect to server. Is it running?', 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Sign In';
+            }
+        });
+
+        function showMsg(text, type) {
+            msg.textContent = text;
+            msg.className = 'msg-' + type;
+        }
+    </script>
 
 </body>
 
