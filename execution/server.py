@@ -38,6 +38,11 @@ def index():
     return send_from_directory(WEB_DIR, "index.html")
 
 
+@app.route("/home.html")
+def home():
+    return send_from_directory(WEB_DIR, "home.html")
+
+
 @app.route("/<path:filename>")
 def static_files(filename):
     return send_from_directory(WEB_DIR, filename)

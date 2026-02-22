@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinFlow AI — Home</title>
+    <meta name="description" content="FinFlow AI — Integrated Workflows Dashboard" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f5f7fa;
+            color: #1e3a4f;
+        }
+
+        /* ══════════════════════════════════════════
+       TOP NAV
+    ══════════════════════════════════════════ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: #ffffff;
+            border-bottom: 1px solid #eaecf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            z-index: 100;
+            box-shadow: 0 1px 8px rgba(30, 58, 79, 0.06);
+        }
+
+        /* ── Left: nav links ── */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #5a7080;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.18s ease, color 0.18s ease;
+            border: none;
+            background: none;
+            letter-spacing: 0.01em;
+        }
+
+        .nav-link:hover {
+            background: #f0f9f5;
+            color: #1e3a4f;
+        }
+
+        .nav-link.active {
+            background: #e8f7f1;
+            color: #3ecf8e;
+            font-weight: 600;
+        }
+
+        .nav-link .nav-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        /* Divider between groups */
+        .nav-divider {
+            width: 1px;
+            height: 22px;
+            background: #eaecf0;
+            margin: 0 8px;
+        }
+
+        /* ── Right: logo ── */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-logo img {
+            height: 38px;
+            width: auto;
+            display: block;
+        }
+
+        /* ══════════════════════════════════════════
+       PAGE BODY
+    ══════════════════════════════════════════ */
+        .page {
+            padding-top: 68px;
+            /* clear fixed navbar */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Welcome banner ── */
+        .welcome-banner {
+            background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
+            padding: 48px 48px 42px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            right: -60px;
+            top: -60px;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(62, 207, 142, 0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .welcome-banner h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+
+        .welcome-banner p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.65);
+            font-weight: 400;
+        }
+
+        .welcome-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(62, 207, 142, 0.18);
+            border: 1px solid rgba(62, 207, 142, 0.35);
+            color: #3ecf8e;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        /* ── Cards grid ── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            padding: 40px 48px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #eaecf0;
+            padding: 28px 28px 24px;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(30, 58, 79, 0.10);
+            border-color: #3ecf8e;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 18px;
+        }
+
+        .card-icon.green {
+            background: #e8f7f1;
+        }
+
+        .card-icon.navy {
+            background: #e8edf2;
+        }
+
+        .card-icon.teal {
+            background: #e4f4f8;
+        }
+
+        .card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a4f;
+            margin-bottom: 6px;
+            letter-spacing: -0.1px;
+        }
+
+        .card p {
+            font-size: 13.5px;
+            color: #7a95a8;
+            line-height: 1.55;
+        }
+
+        .card-arrow {
+            margin-top: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #3ecf8e;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+
+        .card:hover .card-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ── Status bar at bottom ── */
+        .status-bar {
+            margin: 0 48px 40px;
+            padding: 16px 24px;
+            background: #fff;
+            border: 1px solid #eaecf0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #7a95a8;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3ecf8e;
+            box-shadow: 0 0 0 3px rgba(62, 207, 142, 0.20);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .nav-link span.label {
+                display: none;
+            }
+
+            .welcome-banner,
+            .card-grid,
+            .status-bar {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ NAVBAR ══════════════════════════════════════════════════════════ -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+
+        <!-- Left: menu -->
+        <div class="nav-links">
+
+            <a href="#clients" class="nav-link active" id="nav-clients">
+                <span class="nav-icon">👥</span>
+                <span class="label">Clients</span>
+            </a>
+
+            <a href="#processes" class="nav-link" id="nav-processes">
+                <span class="nav-icon">⚙️</span>
+                <span class="label">Processes</span>
+            </a>
+
+            <div class="nav-divider"></div>
+
+            <a href="#reports" class="nav-link" id="nav-reports">
+                <span class="nav-icon">📊</span>
+                <span class="label">Reports</span>
+            </a>
+
+        </div>
+
+        <!-- Right: logo (inline version) -->
+        <div class="nav-logo">
+            <img src="assets/logo-inline.png" alt="FinFlow AI" id="home-logo" draggable="false" />
+        </div>
+
+    </nav>
+
+    <!-- ══ PAGE ════════════════════════════════════════════════════════════ -->
+    <div class="page">
+
+        <!-- Welcome banner -->
+        <div class="welcome-banner">
+            <div class="welcome-tag">&#x2713; Logged in</div>
+            <h1 id="welcome-heading">Welcome back, <span id="user-name">—</span></h1>
+            <p id="user-meta">Loading session…</p>
+        </div>
+
+        <!-- Module cards -->
+        <div class="card-grid">
+
+            <a href="#clients" class="card" id="card-clients">
+                <div class="card-icon green">👥</div>
+                <h2>Clients</h2>
+                <p>Manage all your clients, their details, contact information, and associated files.</p>
+                <div class="card-arrow">Open Clients &rarr;</div>
+            </a>
+
+            <a href="#processes" class="card" id="card-processes">
+                <div class="card-icon navy">⚙️</div>
+                <h2>Processes</h2>
+                <p>Track ongoing processes, assign tasks, set deadlines, and monitor progress.</p>
+                <div class="card-arrow">Open Processes &rarr;</div>
+            </a>
+
+            <a href="#reports" class="card" id="card-reports">
+                <div class="card-icon teal">📊</div>
+                <h2>Reports</h2>
+                <p>Generate financial summaries, workflow reports, and AI-powered insights.</p>
+                <div class="card-arrow">Open Reports &rarr;</div>
+            </a>
+
+        </div>
+
+        <!-- Status bar -->
+        <div class="status-bar">
+            <div class="status-dot"></div>
+            <span>FinFlow AI is running &mdash; all systems operational.</span>
+        </div>
+
+    </div>
+
+    <script>
+        // ── Hydrate user info from sessionStorage (set by login page) ──────────────
+        const name = sessionStorage.getItem('finflow_name') || '';
+        const space = sessionStorage.getItem('finflow_space') || '';
+        const login = sessionStorage.getItem('finflow_login') || '';
+
+        document.getElementById('user-name').textContent = name || login || 'User';
+        document.getElementById('user-meta').textContent = space
+            ? `Space: ${space}  ·  ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`
+            : new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+        // ── Active nav link highlighting ───────────────────────────────────────────
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

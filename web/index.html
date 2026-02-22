@@ -322,7 +322,13 @@
                 const data = await res.json();
 
                 if (res.ok) {
+                    // Store session info for home page
+                    sessionStorage.setItem('finflow_name', data.user?.name || '');
+                    sessionStorage.setItem('finflow_space', data.user?.space || '');
+                    sessionStorage.setItem('finflow_login', data.user?.login || '');
                     showMsg(data.message || 'Login successful!', 'success');
+                    // Brief pause so the user sees the welcome message, then redirect
+                    setTimeout(() => { window.location.href = '/home.html'; }, 900);
                 } else {
                     showMsg(data.error || 'Login failed. Please try again.', 'error');
                 }
