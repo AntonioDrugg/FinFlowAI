@@ -50,20 +50,46 @@ def api_login():
     """
     POST /api/login
     Body: { "space": "...", "login": "...", "password": "..." }
-    Returns 200 on success, 401 on invalid credentials, 400 on missing fields.
+
+    Validation rules:
+      - All three fields must be present and non-empty → 400
+      - The exact combination (space, login, password) must exist in the
+        users table → 401 if not found, 200 if found.
+      - Matching is case-insensitive (space and login are lowercased before lookup).
+      - The password is SHA-256 hashed before comparison — plain text is never stored.
     """
     data = request.get_json(silent=True) or {}
     space    = data.get("space", "").strip()
     login    = data.get("login", "").strip()
     password = data.get("password", "").strip()
 
-    if not all([space, login, password]):
-        return jsonify({"error": "All fields (space, login, password) are required."}), 400
+    # ── Field presence check ───────────────────────────────────────────────────
+    missing = [f for f, v in [("space", space), ("login", login), ("password", password)] if not v]
+    if missing:
+        return jsonify({
+            "error": f"Missing required field(s): {', '.join(missing)}."
+        }), 400
 
-    if um.verify_user(space, login, password):
-        return jsonify({"success": True, "message": f"Welcome, {login}!"}), 200
-    else:
-        return jsonify({"error": "Invalid space, login, or password."}), 401
+    # ── Credential lookup — all three fields must match ────────────────────────
+    user = um.get_user(space, login, password)
+    if user is None:
+        # Deliberately vague — do not reveal which field was wrong
+        return jsonify({
+            "error": "Invalid credentials. Please check your Space, Login, and Password."
+        }), 401
+
+    # ── Success ────────────────────────────────────────────────────────────────
+    display_name = user.get("name") or user["login"]
+    return jsonify({
+        "success": True,
+        "message": f"Welcome, {display_name}!",
+        "user": {
+            "id":    user["id"],
+            "space": user["space"],
+            "login": user["login"],
+            "name":  user.get("name", ""),
+        }
+    }), 200
 
 
 # ── API: Users ─────────────────────────────────────────────────────────────────

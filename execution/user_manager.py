@@ -102,6 +102,31 @@ def verify_user(space: str, login: str, password: str) -> bool:
         con.close()
 
 
+def get_user(space: str, login: str, password: str) -> dict | None:
+    """
+    Return the full user record if the exact (space, login, password) triple
+    exists, or None if no match is found.
+    The password_hash is excluded from the returned dict.
+    """
+    space = normalise(space)
+    login = normalise(login)
+    password_hash = hash_password(password)
+
+    con = get_connection()
+    try:
+        cur = con.cursor()
+        cur.execute(
+            """SELECT id, space, login, name, created_at
+               FROM users
+               WHERE space = ? AND login = ? AND password_hash = ?""",
+            (space, login, password_hash),
+        )
+        row = cur.fetchone()
+        return dict(row) if row else None
+    finally:
+        con.close()
+
+
 def list_users(space: str | None = None) -> list[dict]:
     """Return all credential records, optionally filtered by space."""
     con = get_connection()
