@@ -71,13 +71,13 @@
         }
 
         .nav-link:hover {
-            background: #f0f9f5;
+            background: #f2f4f6;
             color: #1e3a4f;
         }
 
         .nav-link.active {
-            background: #e8f7f1;
-            color: #3ecf8e;
+            background: #f2f4f6;
+            color: #1e3a4f;
             font-weight: 600;
         }
 
@@ -101,7 +101,7 @@
         }
 
         .nav-logo img {
-            height: 38px;
+            height: 54px;
             width: auto;
             display: block;
         }
@@ -120,51 +120,32 @@
         /* ── Welcome banner ── */
         .welcome-banner {
             background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
-            padding: 48px 48px 42px;
+            padding: 14px 48px;
             color: #fff;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-banner::after {
-            content: '';
-            position: absolute;
-            right: -60px;
-            top: -60px;
-            width: 320px;
-            height: 320px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(62, 207, 142, 0.18) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .welcome-banner h1 {
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            margin-bottom: 6px;
-        }
-
-        .welcome-banner p {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.65);
-            font-weight: 400;
-        }
-
-        .welcome-tag {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(62, 207, 142, 0.18);
-            border: 1px solid rgba(62, 207, 142, 0.35);
-            color: #3ecf8e;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            margin-bottom: 16px;
+            gap: 12px;
+            min-height: 52px;
+        }
+
+        .welcome-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #3ecf8e;
+            flex-shrink: 0;
+        }
+
+        .welcome-banner span {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.90);
+            letter-spacing: 0.01em;
+        }
+
+        .welcome-banner strong {
+            color: #ffffff;
+            font-weight: 700;
         }
 
         /* ── Cards grid ── */
@@ -302,7 +283,7 @@
         <!-- Left: menu -->
         <div class="nav-links">
 
-            <a href="#clients" class="nav-link active" id="nav-clients">
+            <a href="#clients" class="nav-link" id="nav-clients">
                 <span class="nav-icon">👥</span>
                 <span class="label">Clients</span>
             </a>
@@ -333,9 +314,8 @@
 
         <!-- Welcome banner -->
         <div class="welcome-banner">
-            <div class="welcome-tag">&#x2713; Logged in</div>
-            <h1 id="welcome-heading">Welcome back, <span id="user-name">—</span></h1>
-            <p id="user-meta">Loading session…</p>
+            <div class="welcome-dot"></div>
+            <span>Welcome back, <strong id="user-name">—</strong></span>
         </div>
 
         <!-- Module cards -->
@@ -373,17 +353,12 @@
     </div>
 
     <script>
-        // ── Hydrate user info from sessionStorage (set by login page) ──────────────
+        // ── Hydrate user name from sessionStorage (written by login page) ──────────
         const name = sessionStorage.getItem('finflow_name') || '';
-        const space = sessionStorage.getItem('finflow_space') || '';
         const login = sessionStorage.getItem('finflow_login') || '';
-
         document.getElementById('user-name').textContent = name || login || 'User';
-        document.getElementById('user-meta').textContent = space
-            ? `Space: ${space}  ·  ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`
-            : new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // ── Active nav link highlighting ───────────────────────────────────────────
+        // ── Active nav highlighting on click (none pre-selected on load) ───────────
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
