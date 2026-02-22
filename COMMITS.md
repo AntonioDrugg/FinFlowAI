@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-22 21:19 UTC
+> Last updated: 2026-02-22 21:33 UTC
 
 ---
 
@@ -10,6 +10,8 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 19 | `d48de1a` | feat: clients page with registration form, scrollable list, back button | 2026-02-22 |
+| 18 | `18e63c6` | docs: update COMMITS.md | 2026-02-22 |
 | 17 | `aeb8021` | feat: new logo, remove status bar, add Log Off button to home page | 2026-02-22 |
 | 16 | `f89c499` | docs: update COMMITS.md | 2026-02-22 |
 | 15 | `f15eda3` | fix: home page nav no default selection, slim banner, bigger logo | 2026-02-22 |
@@ -31,6 +33,16 @@
 ---
 
 ## Details
+
+### `d48de1a` — feat: clients page with registration form, scrollable list, back button
+**Date:** 2026-02-22
+
+---
+
+### `18e63c6` — docs: update COMMITS.md
+**Date:** 2026-02-22
+
+---
 
 ### `aeb8021` — feat: new logo, remove status bar, add Log Off button to home page
 **Date:** 2026-02-22
