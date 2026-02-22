@@ -126,12 +126,12 @@
     ══════════════════════════════════════════ */
         .welcome-banner {
             background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
-            padding: 14px 48px;
+            padding: 7px 48px;
             color: #fff;
             display: flex;
             align-items: center;
             gap: 12px;
-            min-height: 52px;
+            min-height: 26px;
             margin-top: 68px;
             /* below fixed navbar */
         }
@@ -164,7 +164,7 @@
             padding: 32px 48px 0;
             gap: 24px;
             /* fill remaining viewport */
-            height: calc(100vh - 68px - 52px);
+            height: calc(100vh - 68px - 26px);
         }
 
         /* ── Section label ── */
@@ -411,6 +411,7 @@
             flex-shrink: 0;
             display: flex;
             align-items: center;
+            justify-content: flex-end;
         }
 
         .btn-back {
@@ -483,11 +484,8 @@
         </div>
     </nav>
 
-    <!-- ══ SLIM WELCOME BANNER ════════════════════════════════════════════ -->
-    <div class="welcome-banner">
-        <div class="welcome-dot"></div>
-        <span>Welcome back, <strong id="user-name">—</strong></span>
-    </div>
+    <!-- ══ SLIM ACCENT BAR ═════════════════════════════════════════════ -->
+    <div class="welcome-banner"></div>
 
     <!-- ══ PAGE BODY ══════════════════════════════════════════════════════ -->
     <div class="page-body">
