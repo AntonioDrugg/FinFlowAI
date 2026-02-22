@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-22 13:07 UTC
+> Last updated: 2026-02-22 13:13 UTC
 
 ---
 
@@ -10,6 +10,8 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 9 | `58281f2` | feat: add 'name' field to users table and update all scripts | 2026-02-22 |
+| 8 | `8620e40` | docs: update COMMITS.md | 2026-02-22 |
 | 7 | `73c21ee` | feat: password module with space-based auth, SQLite DB, Flask API | 2026-02-22 |
 | 6 | `f2405ce` | docs: update COMMITS.md with commit 5 | 2026-02-22 |
 | 5 | `8383fc2` | feat: add SPACE field above LOGIN on landing page | 2026-02-22 |
@@ -21,6 +23,16 @@
 ---
 
 ## Details
+
+### `58281f2` — feat: add 'name' field to users table and update all scripts
+**Date:** 2026-02-22
+
+---
+
+### `8620e40` — docs: update COMMITS.md
+**Date:** 2026-02-22
+
+---
 
 ### `73c21ee` — feat: password module with space-based auth, SQLite DB, Flask API
 **Date:** 2026-02-22
