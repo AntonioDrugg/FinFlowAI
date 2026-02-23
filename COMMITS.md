@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-22 21:33 UTC
+> Last updated: 2026-02-23 08:53 UTC
 
 ---
 
@@ -10,6 +10,9 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 22 | `e904729` | feat: expand clients to 19 fields with grouped form sections and summary list | 2026-02-23 |
+| 21 | `c42ef7e` | fix: clients page - slim accent bar, no welcome text, back button right-aligned | 2026-02-22 |
+| 20 | `5d2a15d` | docs: update COMMITS.md | 2026-02-22 |
 | 19 | `d48de1a` | feat: clients page with registration form, scrollable list, back button | 2026-02-22 |
 | 18 | `18e63c6` | docs: update COMMITS.md | 2026-02-22 |
 | 17 | `aeb8021` | feat: new logo, remove status bar, add Log Off button to home page | 2026-02-22 |
@@ -33,6 +36,21 @@
 ---
 
 ## Details
+
+### `e904729` — feat: expand clients to 19 fields with grouped form sections and summary list
+**Date:** 2026-02-23
+
+---
+
+### `c42ef7e` — fix: clients page - slim accent bar, no welcome text, back button right-aligned
+**Date:** 2026-02-22
+
+---
+
+### `5d2a15d` — docs: update COMMITS.md
+**Date:** 2026-02-22
+
+---
 
 ### `d48de1a` — feat: clients page with registration form, scrollable list, back button
 **Date:** 2026-02-22
