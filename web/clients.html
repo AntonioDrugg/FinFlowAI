@@ -648,26 +648,6 @@
             </div>
         </div>
 
-        <!-- ─── SECTION 5: PAYE ───────────────────────────────────────────── -->
-        <div class="card">
-            <div class="card-title">
-                <span class="card-title-icon">📋</span> PAYE Details
-            </div>
-            <div class="form-grid">
-
-                <div class="form-group col-2">
-                    <label for="f-payeagent">PAYE Agent Name</label>
-                    <input id="f-payeagent" type="text" placeholder="Registered agent name" />
-                </div>
-
-                <div class="form-group col-2">
-                    <label for="f-payetain">PAYE TAIN</label>
-                    <input id="f-payetain" type="text" placeholder="Agent tax registration number" />
-                </div>
-
-            </div>
-        </div>
-
         <!-- ─── REGISTER BUTTON ───────────────────────────────────────────── -->
         <div class="form-actions" style="margin-bottom:32px;">
             <button class="btn-register" id="btn-register" onclick="registerClient()">Register Client</button>
@@ -713,8 +693,6 @@
                             <th>Bank Holder Name</th>
                             <th>IBAN</th>
                             <th>BIC</th>
-                            <th>PAYE Agent</th>
-                            <th>PAYE TAIN</th>
                             <th>Registered</th>
                             <th></th>
                         </tr>
@@ -777,15 +755,13 @@
                 bank_holder_name: document.getElementById('f-bankname').value,
                 bank_iban: document.getElementById('f-iban').value,
                 bank_bic: document.getElementById('f-bic').value,
-                paye_agent_name: document.getElementById('f-payeagent').value,
-                paye_tain: document.getElementById('f-payetain').value,
             };
         }
 
         function clearForm() {
             ['f-name', 'f-civil', 'f-pps', 'f-dob', 'f-revpwd', 'f-email', 'f-mobile',
                 'f-othphone', 'f-addr1', 'f-addr2', 'f-addr3', 'f-city', 'f-eircode',
-                'f-bankname', 'f-iban', 'f-bic', 'f-payeagent', 'f-payetain'].forEach(id => {
+                'f-bankname', 'f-iban', 'f-bic'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.value = '';
                 });
@@ -824,8 +800,6 @@
                     <td class="td-grey">${v(c.bank_holder_name)}</td>
                     <td class="td-grey">${v(c.bank_iban)}</td>
                     <td class="td-grey">${v(c.bank_bic)}</td>
-                    <td class="td-grey">${v(c.paye_agent_name)}</td>
-                    <td class="td-grey">${v(c.paye_tain)}</td>
                     <td class="td-faint">${fmtDate(c.created_at)}</td>
                     <td><button class="btn-del" title="Delete" onclick="deleteClient(${c.id})">✕</button></td>
                 `;

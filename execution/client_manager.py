@@ -29,8 +29,6 @@ CLIENT_FIELDS = [
     "bank_holder_name",
     "bank_iban",
     "bank_bic",
-    "paye_agent_name",
-    "paye_tain",
 ]
 
 
