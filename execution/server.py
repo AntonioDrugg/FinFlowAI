@@ -55,6 +55,11 @@ def processes_page():
     return send_from_directory(WEB_DIR, "processes.html")
 
 
+@app.route("/space-setup.html")
+def space_setup_page():
+    return send_from_directory(WEB_DIR, "space-setup.html")
+
+
 @app.route("/<path:filename>")
 def static_files(filename):
     return send_from_directory(WEB_DIR, filename)

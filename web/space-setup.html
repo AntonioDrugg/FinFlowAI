@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinFlow AI — Space Setup</title>
+    <meta name="description" content="Configure your FinFlow AI space: manage users and access settings" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f5f7fa;
+            color: #1e3a4f;
+        }
+
+        /* ══ NAVBAR ══════════════════════════════════════════════════════════════ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: #fff;
+            border-bottom: 1px solid #eaecf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            z-index: 200;
+            box-shadow: 0 1px 8px rgba(30, 58, 79, 0.06);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #5a7080;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s;
+            border: none;
+            background: none;
+            letter-spacing: 0.01em;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #f2f4f6;
+            color: #1e3a4f;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 22px;
+            background: #eaecf0;
+            margin: 0 8px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-logoff {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #7a95a8;
+            background: none;
+            border: 1.5px solid #e2e6ea;
+            border-radius: 8px;
+            padding: 7px 16px;
+            cursor: pointer;
+            transition: color 0.18s, border-color 0.18s, background 0.18s;
+        }
+
+        .btn-logoff:hover {
+            color: #c0392b;
+            border-color: #f5c6c2;
+            background: #fff5f5;
+        }
+
+        .nav-logo img {
+            height: 54px;
+            width: auto;
+            display: block;
+        }
+
+        /* ══ ACCENT BAR ══════════════════════════════════════════════════════════ */
+        .accent-bar {
+            height: 8px;
+            margin-top: 68px;
+            background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
+        }
+
+        /* ══ PAGE ════════════════════════════════════════════════════════════════ */
+        .page {
+            padding: 20px 36px 40px;
+        }
+
+        .page-header {
+            margin-bottom: 16px;
+        }
+
+        .page-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1e3a4f;
+            letter-spacing: -0.01em;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: #8fa8b8;
+            margin-top: 2px;
+        }
+
+        /* ══ CARDS ═══════════════════════════════════════════════════════════════ */
+        .card {
+            background: #fff;
+            border: 1px solid #eaecf0;
+            border-radius: 14px;
+            padding: 14px 20px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            margin-bottom: 10px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #f0f3f5;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Space info row */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 8px 20px;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ab0bf;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a4f;
+        }
+
+        .space-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #eef6ff, #e0eefa);
+            border: 1px solid #b8d8f8;
+            border-radius: 8px;
+            padding: 5px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a5fa8;
+            letter-spacing: 0.02em;
+        }
+
+        /* ══ USER FORM ═══════════════════════════════════════════════════════════ */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #8fa8b8;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 9px 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            color: #1e3a4f;
+            background: #f9fafb;
+            border: 1.5px solid #e2e6ea;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.18s, background 0.18s;
+        }
+
+        .form-group input:focus {
+            border-color: #2a82da;
+            background: #fff;
+        }
+
+        .btn-add-user {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #2a5270 0%, #1e3a4f 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.18s, box-shadow 0.18s;
+            box-shadow: 0 2px 8px rgba(30, 58, 79, 0.18);
+        }
+
+        .btn-add-user:hover {
+            opacity: 0.88;
+        }
+
+        /* ══ USER TABLE ══════════════════════════════════════════════════════════ */
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0;
+        }
+
+        .table-wrap {
+            max-height: 340px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .table-wrap::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .table-wrap::-webkit-scrollbar-thumb {
+            background: #d4dde5;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: #f7f9fb;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 1px solid #eaecf0;
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f5f7f9;
+            transition: background 0.15s;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fafbfd;
+        }
+
+        tbody td {
+            padding: 10px 14px;
+            font-size: 13px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .td-login {
+            font-weight: 600;
+            color: #1e3a4f;
+        }
+
+        .td-name {
+            color: #5a7080;
+        }
+
+        .td-space {
+            font-size: 11px;
+            font-weight: 700;
+            color: #2a82da;
+            letter-spacing: 0.04em;
+        }
+
+        .btn-del {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            color: #c0cdd5;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: color 0.18s, background 0.18s;
+        }
+
+        .btn-del:hover {
+            color: #e05252;
+            background: #fff0f0;
+        }
+
+        .empty-state {
+            padding: 36px 24px;
+            text-align: center;
+            color: #b0c4cf;
+        }
+
+        .empty-state .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: #1e3a4f;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(30, 58, 79, 0.28);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background: #a93226;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ NAVBAR ══════════════════════════════════════════════════════════ -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-links">
+            <a href="/home.html" class="nav-link" id="nav-home">
+                <span class="nav-icon">🏠</span><span>Home</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/clients.html" class="nav-link" id="nav-clients">
+                <span class="nav-icon">👥</span><span>Clients</span>
+            </a>
+            <a href="/processes.html" class="nav-link" id="nav-processes">
+                <span class="nav-icon">⚙️</span><span>Processes</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/home.html" class="nav-link" id="nav-reports">
+                <span class="nav-icon">📊</span><span>Reports</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/space-setup.html" class="nav-link active" id="nav-space-setup">
+                <span class="nav-icon">🔧</span><span>Space Setup</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <button class="btn-logoff" onclick="logOff()">Log Off</button>
+            <div class="nav-logo">
+                <img src="assets/logo-inline-2.png" alt="FinFlow AI" draggable="false" />
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══ ACCENT BAR ══════════════════════════════════════════════════════ -->
+    <div class="accent-bar"></div>
+
+    <!-- ══ PAGE ════════════════════════════════════════════════════════════ -->
+    <div class="page">
+
+        <div class="page-header">
+            <h1 class="page-title">🔧 Space Setup</h1>
+            <p class="page-subtitle">Manage users and configuration for your workspace.</p>
+        </div>
+
+        <!-- ─── SECTION 1: Active Space ──────────────────────────────────── -->
+        <div class="card">
+            <div class="card-title">🏢 Active Space</div>
+            <div class="info-grid">
+                <span class="info-label">Space Name</span>
+                <span class="space-badge" id="space-name-display">—</span>
+
+                <span class="info-label">Logged in as</span>
+                <span class="info-value" id="user-login-display">—</span>
+            </div>
+        </div>
+
+        <!-- ─── SECTION 2: Add User ───────────────────────────────────────── -->
+        <div class="card">
+            <div class="card-title">➕ Add User to Space</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="f-login">Login</label>
+                    <input id="f-login" type="text" placeholder="username" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label for="f-password">Password</label>
+                    <input id="f-password" type="password" placeholder="••••••••" autocomplete="new-password" />
+                </div>
+                <div class="form-group">
+                    <label for="f-name">Display Name</label>
+                    <input id="f-name" type="text" placeholder="Full name (optional)" />
+                </div>
+                <button class="btn-add-user" id="btn-add-user" onclick="addUser()">+ Add User</button>
+            </div>
+        </div>
+
+        <!-- ─── SECTION 3: Users List ─────────────────────────────────────── -->
+        <div class="card">
+            <div class="list-header">
+                <div class="card-title" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
+                    👤 Space Users &nbsp;<span id="user-count" style="font-weight:400; color:#c0cdd5;"></span>
+                </div>
+            </div>
+            <div style="margin-top:10px; padding-top:8px; border-top:1px solid #f0f3f5;">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Login</th>
+                                <th>Display Name</th>
+                                <th>Space</th>
+                                <th>Added</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-body"></tbody>
+                    </table>
+                    <div id="empty-state" class="empty-state" style="display:none;">
+                        <div class="icon">👤</div>
+                        <p>No users in this space yet.<br />Use the form above to add the first one.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ── Session values ───────────────────────────────────────────────────────
+        const SPACE = sessionStorage.getItem('finflow_space') || '';
+        const LOGIN = sessionStorage.getItem('finflow_login') || '';
+
+        document.getElementById('space-name-display').textContent = SPACE || '(unknown)';
+        document.getElementById('user-login-display').textContent = LOGIN || '(unknown)';
+
+        // ── Toast ─────────────────────────────────────────────────────────────────
+        function toast(msg, isError = false) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast show' + (isError ? ' error' : '');
+            clearTimeout(el._t);
+            el._t = setTimeout(() => { el.className = 'toast'; }, 3200);
+        }
+
+        // ── Load users ────────────────────────────────────────────────────────────
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/users' + (SPACE ? `?space=${encodeURIComponent(SPACE)}` : ''));
+                const users = await res.json();
+                renderUsers(users);
+            } catch (e) {
+                toast('Could not load users.', true);
+            }
+        }
+
+        function escHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function fmtDate(iso) {
+            if (!iso) return '—';
+            try { return new Date(iso).toLocaleDateString('en-IE', { day: '2-digit', month: 'short', year: 'numeric' }); }
+            catch { return iso; }
+        }
+
+        function renderUsers(users) {
+            const body = document.getElementById('users-body');
+            const empty = document.getElementById('empty-state');
+            const count = document.getElementById('user-count');
+            body.innerHTML = '';
+            count.textContent = users.length ? `(${users.length})` : '';
+
+            if (!users.length) { empty.style.display = 'block'; return; }
+            empty.style.display = 'none';
+
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="td-login">${escHtml(u.login)}</td>
+                    <td class="td-name">${escHtml(u.name || '—')}</td>
+                    <td class="td-space">${escHtml(u.space)}</td>
+                    <td style="color:#9ab0bf; font-size:12px;">${fmtDate(u.created_at)}</td>
+                    <td><button class="btn-del" title="Remove user" onclick="deleteUser(${u.id}, '${escHtml(u.login)}')">✕</button></td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        // ── Add user ──────────────────────────────────────────────────────────────
+        async function addUser() {
+            const login = document.getElementById('f-login').value.trim();
+            const password = document.getElementById('f-password').value.trim();
+            const name = document.getElementById('f-name').value.trim();
+
+            if (!login || !password) {
+                toast('Login and Password are required.', true);
+                return;
+            }
+
+            const btn = document.getElementById('btn-add-user');
+            btn.disabled = true;
+            btn.textContent = 'Adding…';
+
+            try {
+                const res = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ space: SPACE, login, password, name }),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    toast(data.error || 'Failed to add user.', true);
+                } else {
+                    toast(`User "${login}" added to ${SPACE}.`);
+                    document.getElementById('f-login').value = '';
+                    document.getElementById('f-password').value = '';
+                    document.getElementById('f-name').value = '';
+                    loadUsers();
+                }
+            } catch (e) {
+                toast('Network error. Please try again.', true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '+ Add User';
+            }
+        }
+
+        // ── Delete user ───────────────────────────────────────────────────────────
+        async function deleteUser(id, login) {
+            if (!confirm(`Remove user "${login}" from this space?\n\nThis cannot be undone.`)) return;
+
+            try {
+                const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    toast(`User "${login}" removed.`);
+                    loadUsers();
+                } else {
+                    const d = await res.json();
+                    toast(d.error || 'Could not delete user.', true);
+                }
+            } catch (e) {
+                toast('Network error. Please try again.', true);
+            }
+        }
+
+        // ── Enter key shortcut on form ────────────────────────────────────────────
+        ['f-login', 'f-password', 'f-name'].forEach(id => {
+            document.getElementById(id).addEventListener('keydown', e => {
+                if (e.key === 'Enter') addUser();
+            });
+        });
+
+        // ── Log Off ───────────────────────────────────────────────────────────────
+        function logOff() {
+            sessionStorage.removeItem('finflow_name');
+            sessionStorage.removeItem('finflow_space');
+            sessionStorage.removeItem('finflow_login');
+            window.location.href = '/';
+        }
+
+        // ── Init ──────────────────────────────────────────────────────────────────
+        loadUsers();
+    </script>
+
+</body>
+
+</html>
