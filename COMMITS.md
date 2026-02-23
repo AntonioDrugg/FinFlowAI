@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-23 08:53 UTC
+> Last updated: 2026-02-23 09:04 UTC
 
 ---
 
@@ -10,6 +10,8 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 24 | `494a680` | feat: all-fields scrollable client table, rename phone->legacy_phone in DB | 2026-02-23 |
+| 23 | `88e08fa` | docs: update COMMITS.md | 2026-02-23 |
 | 22 | `e904729` | feat: expand clients to 19 fields with grouped form sections and summary list | 2026-02-23 |
 | 21 | `c42ef7e` | fix: clients page - slim accent bar, no welcome text, back button right-aligned | 2026-02-22 |
 | 20 | `5d2a15d` | docs: update COMMITS.md | 2026-02-22 |
@@ -36,6 +38,16 @@
 ---
 
 ## Details
+
+### `494a680` — feat: all-fields scrollable client table, rename phone->legacy_phone in DB
+**Date:** 2026-02-23
+
+---
+
+### `88e08fa` — docs: update COMMITS.md
+**Date:** 2026-02-23
+
+---
 
 ### `e904729` — feat: expand clients to 19 fields with grouped form sections and summary list
 **Date:** 2026-02-23
