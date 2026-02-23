@@ -591,17 +591,17 @@
             <div class="card-title">
                 <span class="card-title-icon">🏠</span> Address
             </div>
-            <!-- 5-column grid: Row 1 = addr1(2)+addr2(2)+addr3(1), Row 2 = city(3)+eircode(2) -->
-            <div class="form-grid" style="grid-template-columns: repeat(5, 1fr);">
+            <!-- All 5 address fields on a single row -->
+            <div class="form-grid" style="grid-template-columns: 2fr 1fr 1fr 2fr 1fr;">
 
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group">
                     <label for="f-addr1">Address Line 1</label>
                     <input id="f-addr1" type="text" placeholder="Street address" />
                 </div>
 
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group">
                     <label for="f-addr2">Address Line 2</label>
-                    <input id="f-addr2" type="text" placeholder="Apartment, suite, area" />
+                    <input id="f-addr2" type="text" placeholder="Apartment" />
                 </div>
 
                 <div class="form-group">
@@ -609,12 +609,12 @@
                     <input id="f-addr3" type="text" placeholder="Townland" />
                 </div>
 
-                <div class="form-group" style="grid-column: span 3;">
+                <div class="form-group">
                     <label for="f-city">City / County</label>
-                    <input id="f-city" type="text" placeholder="Dublin / Cork / Galway…" />
+                    <input id="f-city" type="text" placeholder="Dublin / Cork…" />
                 </div>
 
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group">
                     <label for="f-eircode">Eircode</label>
                     <input id="f-eircode" type="text" placeholder="D01 X2Y3" />
                 </div>
