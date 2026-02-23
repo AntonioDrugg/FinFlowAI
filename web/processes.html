@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinFlow AI — Processes</title>
+    <meta name="description"
+        content="Run automated processes such as refund checks across your client portfolio in FinFlow AI" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f5f7fa;
+            color: #1e3a4f;
+            height: 100%;
+        }
+
+        /* ══ NAVBAR ══════════════════════════════════════════════════════════════ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: #fff;
+            border-bottom: 1px solid #eaecf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            z-index: 200;
+            box-shadow: 0 1px 8px rgba(30, 58, 79, 0.06);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #5a7080;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s;
+            border: none;
+            background: none;
+            letter-spacing: 0.01em;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #f2f4f6;
+            color: #1e3a4f;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 22px;
+            background: #eaecf0;
+            margin: 0 8px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-logoff {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #7a95a8;
+            background: none;
+            border: 1.5px solid #e2e6ea;
+            border-radius: 8px;
+            padding: 7px 16px;
+            cursor: pointer;
+            transition: color 0.18s, border-color 0.18s, background 0.18s;
+        }
+
+        .btn-logoff:hover {
+            color: #c0392b;
+            border-color: #f5c6c2;
+            background: #fff5f5;
+        }
+
+        .nav-logo img {
+            height: 54px;
+            width: auto;
+            display: block;
+        }
+
+        /* ══ ACCENT BAR ══════════════════════════════════════════════════════════ */
+        .accent-bar {
+            height: 8px;
+            margin-top: 68px;
+            background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
+        }
+
+        /* ══ PAGE LAYOUT ══════════════════════════════════════════════════════════ */
+        .page {
+            padding: 20px 36px 100px;
+            /* bottom padding for footer bar */
+            min-height: calc(100vh - 76px);
+        }
+
+        .page-header {
+            margin-bottom: 16px;
+        }
+
+        .page-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1e3a4f;
+            letter-spacing: -0.01em;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: #8fa8b8;
+            margin-top: 2px;
+        }
+
+        /* Two-column split */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        /* ══ SHARED CARD ═════════════════════════════════════════════════════════ */
+        .panel {
+            background: #fff;
+            border: 1px solid #eaecf0;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 12px 18px 10px;
+            border-bottom: 1px solid #f0f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ══ LEFT: PROCESS LIST ══════════════════════════════════════════════════ */
+        .process-list {
+            padding: 10px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .process-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: background 0.18s, box-shadow 0.18s;
+            border: 1.5px solid transparent;
+            user-select: none;
+        }
+
+        .process-item:hover {
+            background: #f5f8fa;
+        }
+
+        .process-item.selected {
+            background: #eef6ff;
+            border-color: #b8d8f8;
+            box-shadow: 0 0 0 3px rgba(42, 130, 218, 0.06);
+        }
+
+        .process-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #2a5270, #1e3a4f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .process-item.selected .process-icon {
+            background: linear-gradient(135deg, #2a82da, #1a6abf);
+        }
+
+        .process-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .process-name {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1e3a4f;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .process-desc {
+            font-size: 11.5px;
+            color: #9ab0bf;
+            margin-top: 1px;
+        }
+
+        .process-item.selected .process-name {
+            color: #1a5fa8;
+        }
+
+        .process-badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: #e8f4fd;
+            color: #2a82da;
+            flex-shrink: 0;
+        }
+
+        .process-item:not(.selected) .process-badge {
+            background: #f0f3f5;
+            color: #9ab0bf;
+        }
+
+        /* ══ RIGHT: CLIENT LIST ══════════════════════════════════════════════════ */
+        .client-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            border-bottom: 1px solid #f0f3f5;
+            background: #fafbfc;
+        }
+
+        .select-all-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: #5a7080;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .select-all-label input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #2a82da;
+            cursor: pointer;
+        }
+
+        .selected-count {
+            margin-left: auto;
+            font-size: 12px;
+            color: #9ab0bf;
+            font-weight: 500;
+        }
+
+        .selected-count span {
+            color: #2a82da;
+            font-weight: 700;
+        }
+
+        /* Client table */
+        .client-table-wrap {
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+
+        .client-table-wrap::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .client-table-wrap::-webkit-scrollbar-thumb {
+            background: #d4dde5;
+            border-radius: 4px;
+        }
+
+        .client-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .client-table thead th {
+            position: sticky;
+            top: 0;
+            background: #f7f9fb;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            padding: 8px 14px;
+            text-align: left;
+            border-bottom: 1px solid #eaecf0;
+            z-index: 1;
+        }
+
+        .client-table tbody tr {
+            border-bottom: 1px solid #f5f7f9;
+            transition: background 0.15s;
+        }
+
+        .client-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .client-table tbody tr:hover {
+            background: #fafbfd;
+        }
+
+        .client-table tbody tr.row-checked {
+            background: #f0f7ff;
+        }
+
+        .client-table tbody td {
+            padding: 10px 14px;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .td-cb {
+            width: 44px;
+            text-align: center;
+        }
+
+        .td-cb input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #2a82da;
+            cursor: pointer;
+        }
+
+        .td-ff {
+            font-size: 11px;
+            font-weight: 700;
+            color: #2a82da;
+            letter-spacing: 0.04em;
+            width: 80px;
+        }
+
+        .td-name {
+            font-weight: 600;
+            color: #1e3a4f;
+        }
+
+        .td-grey {
+            color: #7a95a8;
+            font-size: 12.5px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 48px 24px;
+            text-align: center;
+            color: #b0c4cf;
+        }
+
+        .empty-state .icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+
+        /* ══ STICKY FOOTER BAR ═══════════════════════════════════════════════════ */
+        .footer-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: #fff;
+            border-top: 1px solid #eaecf0;
+            box-shadow: 0 -2px 12px rgba(30, 58, 79, 0.07);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            z-index: 100;
+        }
+
+        .btn-back {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #5a7080;
+            background: none;
+            border: 1.5px solid #d4dde5;
+            border-radius: 9px;
+            padding: 9px 22px;
+            cursor: pointer;
+            transition: background 0.18s, border-color 0.18s, color 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-back:hover {
+            background: #f5f7fa;
+            border-color: #b0bec5;
+            color: #1e3a4f;
+        }
+
+        .btn-run {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #2a5270 0%, #1e3a4f 100%);
+            border: none;
+            border-radius: 9px;
+            padding: 10px 28px;
+            cursor: pointer;
+            transition: opacity 0.18s, box-shadow 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(30, 58, 79, 0.20);
+        }
+
+        .btn-run:hover:not(:disabled) {
+            opacity: 0.88;
+            box-shadow: 0 4px 16px rgba(30, 58, 79, 0.28);
+        }
+
+        .btn-run:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .footer-info {
+            font-size: 13px;
+            color: #9ab0bf;
+        }
+
+        .footer-info strong {
+            color: #2a5270;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ NAVBAR ══════════════════════════════════════════════════════════ -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-links">
+            <a href="/clients.html" class="nav-link" id="nav-clients">
+                <span class="nav-icon">👥</span><span>Clients</span>
+            </a>
+            <a href="/processes.html" class="nav-link active" id="nav-processes">
+                <span class="nav-icon">⚙️</span><span>Processes</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/home.html" class="nav-link" id="nav-reports">
+                <span class="nav-icon">📊</span><span>Reports</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <button class="btn-logoff" onclick="logOff()">Log Off</button>
+            <div class="nav-logo">
+                <img src="assets/logo-inline-2.png" alt="FinFlow AI" draggable="false" />
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══ ACCENT BAR ══════════════════════════════════════════════════════ -->
+    <div class="accent-bar"></div>
+
+    <!-- ══ PAGE ════════════════════════════════════════════════════════════ -->
+    <div class="page">
+
+        <div class="page-header">
+            <h1 class="page-title">⚙️ Processes</h1>
+            <p class="page-subtitle">Select a process on the left, choose the clients to include, then run.</p>
+        </div>
+
+        <div class="split-layout">
+
+            <!-- ─── LEFT PANEL: Available processes ─────────────────────── -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">📋 Available Processes</div>
+                </div>
+
+                <div class="process-list" id="process-list">
+
+                    <div class="process-item selected" data-process="refunds-check" id="proc-refunds"
+                        onclick="selectProcess(this)" tabindex="0" role="button" aria-pressed="true">
+                        <div class="process-icon">💶</div>
+                        <div class="process-info">
+                            <div class="process-name">Refunds Check</div>
+                            <div class="process-desc">Query Revenue for refund status</div>
+                        </div>
+                        <div class="process-badge">Active</div>
+                    </div>
+
+                    <!-- Placeholder for future processes -->
+                    <!-- <div class="process-item" data-process="tax-cert" onclick="selectProcess(this)">…</div> -->
+
+                </div>
+            </div>
+
+            <!-- ─── RIGHT PANEL: Client selection ────────────────────────── -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">👥 Select Clients</div>
+                </div>
+
+                <!-- Toolbar: select-all + count -->
+                <div class="client-toolbar">
+                    <label class="select-all-label" for="chk-select-all">
+                        <input type="checkbox" id="chk-select-all" onchange="toggleSelectAll(this)" />
+                        Select all
+                    </label>
+                    <span class="selected-count" id="selected-count">
+                        <span id="selected-n">0</span> selected
+                    </span>
+                </div>
+
+                <!-- Client table -->
+                <div class="client-table-wrap">
+                    <table class="client-table">
+                        <thead>
+                            <tr>
+                                <th class="td-cb"></th>
+                                <th>FF #</th>
+                                <th>Name</th>
+                                <th>PPS Number</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-body"></tbody>
+                    </table>
+                    <div id="empty-state" class="empty-state" style="display:none;">
+                        <div class="icon">👤</div>
+                        <p>No clients registered yet.<br />Add clients on the <a href="/clients.html"
+                                style="color:#2a82da;">Clients</a> page first.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══ FOOTER BAR ═══════════════════════════════════════════════════════ -->
+    <div class="footer-bar">
+        <button class="btn-back" id="btn-back" onclick="window.location.href='/home.html'">
+            &#8592; Back
+        </button>
+        <span class="footer-info" id="footer-info">
+            Select a process and at least one client to continue.
+        </span>
+        <button class="btn-run" id="btn-run" disabled>
+            ▶ Run Process
+        </button>
+    </div>
+
+    <script>
+        // ── Helpers ─────────────────────────────────────────────────────────────
+        function escHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // ── Active process tracking ──────────────────────────────────────────────
+        let activeProcess = 'refunds-check';
+
+        function selectProcess(el) {
+            document.querySelectorAll('.process-item').forEach(i => {
+                i.classList.remove('selected');
+                i.setAttribute('aria-pressed', 'false');
+            });
+            el.classList.add('selected');
+            el.setAttribute('aria-pressed', 'true');
+            activeProcess = el.dataset.process;
+            updateFooter();
+        }
+
+        // ── Load clients ─────────────────────────────────────────────────────────
+        async function loadClients() {
+            try {
+                const res = await fetch('/api/clients');
+                const data = await res.json();
+                renderClients(data);
+            } catch (e) {
+                console.error('Could not load clients:', e);
+            }
+        }
+
+        function renderClients(clients) {
+            const body = document.getElementById('clients-body');
+            const empty = document.getElementById('empty-state');
+            body.innerHTML = '';
+
+            if (!clients.length) {
+                empty.style.display = 'block';
+                updateFooter();
+                return;
+            }
+            empty.style.display = 'none';
+
+            clients.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.dataset.id = c.id;
+                tr.innerHTML = `
+                    <td class="td-cb">
+                        <input type="checkbox"
+                               id="chk-client-${c.id}"
+                               aria-label="Select ${escHtml(c.name)}"
+                               onchange="onRowCheck(this)" />
+                    </td>
+                    <td class="td-ff">${escHtml(c.finflow_number)}</td>
+                    <td class="td-name">${escHtml(c.name)}</td>
+                    <td class="td-grey">${escHtml(c.pps_number || '—')}</td>
+                    <td class="td-grey">${escHtml(c.email || '—')}</td>
+                `;
+                body.appendChild(tr);
+            });
+
+            updateFooter();
+        }
+
+        // ── Checkbox logic ───────────────────────────────────────────────────────
+        function onRowCheck(cb) {
+            const row = cb.closest('tr');
+            if (cb.checked) {
+                row.classList.add('row-checked');
+            } else {
+                row.classList.remove('row-checked');
+                document.getElementById('chk-select-all').checked = false;
+            }
+            syncSelectAll();
+            updateFooter();
+        }
+
+        function toggleSelectAll(masterCb) {
+            document.querySelectorAll('#clients-body input[type="checkbox"]').forEach(cb => {
+                cb.checked = masterCb.checked;
+                const row = cb.closest('tr');
+                masterCb.checked ? row.classList.add('row-checked') : row.classList.remove('row-checked');
+            });
+            updateFooter();
+        }
+
+        function syncSelectAll() {
+            const all = document.querySelectorAll('#clients-body input[type="checkbox"]');
+            const checked = document.querySelectorAll('#clients-body input[type="checkbox"]:checked');
+            const master = document.getElementById('chk-select-all');
+            master.checked = all.length > 0 && checked.length === all.length;
+            master.indeterminate = checked.length > 0 && checked.length < all.length;
+        }
+
+        function getSelectedIds() {
+            return [...document.querySelectorAll('#clients-body input[type="checkbox"]:checked')]
+                .map(cb => cb.closest('tr').dataset.id);
+        }
+
+        // ── Footer state ─────────────────────────────────────────────────────────
+        function updateFooter() {
+            const sel = getSelectedIds();
+            const btnRun = document.getElementById('btn-run');
+            const info = document.getElementById('footer-info');
+            const n = sel.length;
+
+            document.getElementById('selected-n').textContent = n;
+
+            if (!activeProcess || n === 0) {
+                btnRun.disabled = true;
+                info.innerHTML = 'Select a process and at least one client to continue.';
+            } else {
+                btnRun.disabled = false;
+                info.innerHTML = `Ready to run <strong>${formatProcessName(activeProcess)}</strong> for <strong>${n}</strong> client${n !== 1 ? 's' : ''}.`;
+            }
+        }
+
+        function formatProcessName(key) {
+            const map = { 'refunds-check': 'Refunds Check' };
+            return map[key] || key;
+        }
+
+        // ── Run (placeholder for now) ────────────────────────────────────────────
+        document.getElementById('btn-run').addEventListener('click', () => {
+            const ids = getSelectedIds();
+            const proc = activeProcess;
+            alert(`Process "${formatProcessName(proc)}" queued for ${ids.length} client(s).\n\nIDs: ${ids.join(', ')}\n\n(API integration coming soon)`);
+        });
+
+        // ── Log Off ──────────────────────────────────────────────────────────────
+        function logOff() {
+            sessionStorage.removeItem('finflow_name');
+            sessionStorage.removeItem('finflow_space');
+            sessionStorage.removeItem('finflow_login');
+            window.location.href = '/';
+        }
+
+        // ── Init ─────────────────────────────────────────────────────────────────
+        loadClients();
+    </script>
+
+</body>
+
+</html>

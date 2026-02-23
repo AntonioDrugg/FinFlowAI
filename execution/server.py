@@ -50,6 +50,11 @@ def clients_page():
     return send_from_directory(WEB_DIR, "clients.html")
 
 
+@app.route("/processes.html")
+def processes_page():
+    return send_from_directory(WEB_DIR, "processes.html")
+
+
 @app.route("/<path:filename>")
 def static_files(filename):
     return send_from_directory(WEB_DIR, filename)
