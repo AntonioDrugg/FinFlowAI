@@ -117,14 +117,14 @@
 
         /* ══ ACCENT BAR ═════════════════════════════════════════════════════════ */
         .accent-bar {
-            height: 26px;
+            height: 8px;
             margin-top: 68px;
             background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
         }
 
         /* ══ PAGE WRAPPER ════════════════════════════════════════════════════════ */
         .page {
-            padding: 28px 48px;
+            padding: 16px 48px;
         }
 
         /* ══ SECTION CARD ════════════════════════════════════════════════════════ */
@@ -132,33 +132,33 @@
             background: #fff;
             border: 1px solid #eaecf0;
             border-radius: 14px;
-            padding: 24px 28px;
-            margin-bottom: 20px;
+            padding: 14px 20px;
+            margin-bottom: 12px;
         }
 
         .card-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.10em;
             text-transform: uppercase;
             color: #9ab0bf;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
+            margin-bottom: 10px;
+            padding-bottom: 7px;
             border-bottom: 1px solid #f0f3f5;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .card-title-icon {
-            font-size: 14px;
+            font-size: 12px;
         }
 
         /* ══ FORM GRID ═══════════════════════════════════════════════════════════ */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 16px 20px;
+            gap: 10px 14px;
         }
 
         .col-2 {
@@ -591,29 +591,30 @@
             <div class="card-title">
                 <span class="card-title-icon">🏠</span> Address
             </div>
-            <div class="form-grid">
+            <!-- 5-column grid: Row 1 = addr1(2)+addr2(2)+addr3(1), Row 2 = city(3)+eircode(2) -->
+            <div class="form-grid" style="grid-template-columns: repeat(5, 1fr);">
 
-                <div class="form-group col-4">
+                <div class="form-group" style="grid-column: span 2;">
                     <label for="f-addr1">Address Line 1</label>
                     <input id="f-addr1" type="text" placeholder="Street address" />
                 </div>
 
-                <div class="form-group col-2">
+                <div class="form-group" style="grid-column: span 2;">
                     <label for="f-addr2">Address Line 2</label>
-                    <input id="f-addr2" type="text" placeholder="Apartment, suite, etc." />
+                    <input id="f-addr2" type="text" placeholder="Apartment, suite, area" />
                 </div>
 
-                <div class="form-group col-2">
+                <div class="form-group">
                     <label for="f-addr3">Address Line 3</label>
-                    <input id="f-addr3" type="text" placeholder="Area / townland" />
+                    <input id="f-addr3" type="text" placeholder="Townland" />
                 </div>
 
-                <div class="form-group col-2">
+                <div class="form-group" style="grid-column: span 3;">
                     <label for="f-city">City / County</label>
                     <input id="f-city" type="text" placeholder="Dublin / Cork / Galway…" />
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="grid-column: span 2;">
                     <label for="f-eircode">Eircode</label>
                     <input id="f-eircode" type="text" placeholder="D01 X2Y3" />
                 </div>
@@ -626,14 +627,15 @@
             <div class="card-title">
                 <span class="card-title-icon">🏦</span> Banking Details
             </div>
-            <div class="form-grid">
+            <!-- 3 equal cols: holder name + IBAN + BIC all on one line -->
+            <div class="form-grid" style="grid-template-columns: 2fr 2fr 1fr;">
 
-                <div class="form-group col-2">
+                <div class="form-group">
                     <label for="f-bankname">Account Holder's Name</label>
                     <input id="f-bankname" type="text" placeholder="Name on bank account" />
                 </div>
 
-                <div class="form-group col-2">
+                <div class="form-group">
                     <label for="f-iban">IBAN</label>
                     <input id="f-iban" type="text" placeholder="IE29 AIBK 9311 5212 3456 78" autocomplete="off" />
                 </div>
@@ -678,7 +680,17 @@
                 <div class="card-title">
                     <span class="card-title-icon">👥</span> Registered Clients
                 </div>
-                <span id="client-count"></span>
+                <div style="display:flex; align-items:center; gap:16px; margin-left:auto;">
+                    <span id="client-count"></span>
+                    <a href="/api/clients/export.csv" id="btn-export" style="font-size:12.5px; font-weight:600; color:#2db87a;
+                              text-decoration:none; display:flex; align-items:center; gap:5px;
+                              padding:5px 12px; border:1.5px solid #b8ead1; border-radius:7px;
+                              background:#f0fbf6; transition:background 0.18s, border-color 0.18s;"
+                        onmouseover="this.style.background='#d8f5eb'; this.style.borderColor='#3ecf8e';"
+                        onmouseout="this.style.background='#f0fbf6'; this.style.borderColor='#b8ead1';">
+                        &#8595; Extract all
+                    </a>
+                </div>
             </div>
             <div class="table-wrap" style="overflow-x: auto;">
                 <table style="white-space:nowrap;">

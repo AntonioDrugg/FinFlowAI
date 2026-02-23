@@ -16,9 +16,10 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR / "execution"))
 
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
+import csv, io
 
 import user_manager as um
 import client_manager as cm
@@ -200,6 +201,49 @@ def api_delete_client(client_id: int):
     if cm.delete_client(client_id):
         return jsonify({"message": f"Client {client_id} deleted."}), 200
     return jsonify({"error": f"No client with id={client_id}."}), 404
+
+
+@app.get("/api/clients/export.csv")
+def api_export_clients_csv():
+    """
+    GET /api/clients/export.csv
+    Returns a downloadable CSV with all registered clients.
+    Excluded fields: revenue_password, legacy_phone.
+    """
+    EXCLUDED = {"revenue_password", "legacy_phone"}
+
+    clients = cm.list_clients()          # list of dicts, already enriched
+    if not clients:
+        # Return an empty CSV with just headers if no clients yet
+        all_keys = ["finflow_number", "id", "name", "civil_status", "pps_number",
+                    "date_of_birth", "email", "mobile", "other_phone",
+                    "address_line1", "address_line2", "address_line3",
+                    "city_county", "eir_code", "bank_holder_name",
+                    "bank_iban", "bank_bic", "paye_agent_name",
+                    "paye_tain", "created_at"]
+    else:
+        all_keys = [k for k in clients[0].keys() if k not in EXCLUDED]
+
+    buf = io.StringIO()
+    writer = csv.DictWriter(
+        buf,
+        fieldnames=all_keys,
+        extrasaction="ignore",
+        lineterminator="\r\n",
+    )
+    writer.writeheader()
+    for row in clients:
+        writer.writerow({k: row.get(k, "") for k in all_keys})
+
+    csv_bytes = buf.getvalue().encode("utf-8-sig")   # BOM for Excel compatibility
+    return Response(
+        csv_bytes,
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=finflowai_clients.csv",
+            "Content-Length": str(len(csv_bytes)),
+        }
+    )
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
