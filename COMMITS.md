@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-23 11:56 UTC
+> Last updated: 2026-02-23 17:11 UTC
 
 ---
 
@@ -10,6 +10,9 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 31 | `3b4729b` | feat: add Processes page with process list + client selector panel | 2026-02-23 |
+| 30 | `af0c0f5` | fix: address fields all on one line (5-col single-row grid) | 2026-02-23 |
+| 29 | `4c1ddb0` | docs: update COMMITS.md | 2026-02-23 |
 | 28 | `2001080` | feat: remove PAYE fields from DB, form, table, and API | 2026-02-23 |
 | 27 | `7b0755f` | docs: update COMMITS.md | 2026-02-23 |
 | 26 | `ae9f9f5` | feat: slim layout, banking/address grids fixed, CSV export endpoint + Extract All button | 2026-02-23 |
@@ -42,6 +45,21 @@
 ---
 
 ## Details
+
+### `3b4729b` — feat: add Processes page with process list + client selector panel
+**Date:** 2026-02-23
+
+---
+
+### `af0c0f5` — fix: address fields all on one line (5-col single-row grid)
+**Date:** 2026-02-23
+
+---
+
+### `4c1ddb0` — docs: update COMMITS.md
+**Date:** 2026-02-23
+
+---
 
 ### `2001080` — feat: remove PAYE fields from DB, form, table, and API
 **Date:** 2026-02-23
