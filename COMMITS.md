@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-23 17:11 UTC
+> Last updated: 2026-02-23 17:19 UTC
 
 ---
 
@@ -10,6 +10,9 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 34 | `73d16f9` | feat: Space Setup page, Home link on all pages, consistent navbar | 2026-02-23 |
+| 33 | `fd9f4f3` | fix: swap Back/Run buttons in footer â€” Run left, Back right | 2026-02-23 |
+| 32 | `eb09f24` | docs: update COMMITS.md | 2026-02-23 |
 | 31 | `3b4729b` | feat: add Processes page with process list + client selector panel | 2026-02-23 |
 | 30 | `af0c0f5` | fix: address fields all on one line (5-col single-row grid) | 2026-02-23 |
 | 29 | `4c1ddb0` | docs: update COMMITS.md | 2026-02-23 |
@@ -45,6 +48,21 @@
 ---
 
 ## Details
+
+### `73d16f9` — feat: Space Setup page, Home link on all pages, consistent navbar
+**Date:** 2026-02-23
+
+---
+
+### `fd9f4f3` — fix: swap Back/Run buttons in footer â€” Run left, Back right
+**Date:** 2026-02-23
+
+---
+
+### `eb09f24` — docs: update COMMITS.md
+**Date:** 2026-02-23
+
+---
 
 ### `3b4729b` — feat: add Processes page with process list + client selector panel
 **Date:** 2026-02-23
