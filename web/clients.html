@@ -305,6 +305,7 @@
         .table-wrap {
             max-height: 380px;
             overflow-y: auto;
+            overflow-x: auto;
         }
 
         .table-wrap::-webkit-scrollbar {
@@ -338,9 +339,10 @@
             letter-spacing: 0.08em;
             text-transform: uppercase;
             color: #9ab0bf;
-            padding: 10px 16px;
+            padding: 10px 14px;
             text-align: left;
             border-bottom: 1px solid #eaecf0;
+            white-space: nowrap;
             z-index: 1;
         }
 
@@ -358,9 +360,10 @@
         }
 
         tbody td {
-            padding: 12px 16px;
-            font-size: 13.5px;
+            padding: 11px 14px;
+            font-size: 13px;
             vertical-align: middle;
+            white-space: nowrap;
         }
 
         .td-ff {
@@ -677,16 +680,29 @@
                 </div>
                 <span id="client-count"></span>
             </div>
-            <div class="table-wrap">
-                <table>
+            <div class="table-wrap" style="overflow-x: auto;">
+                <table style="white-space:nowrap;">
                     <thead>
                         <tr>
                             <th>FF #</th>
                             <th>Name</th>
-                            <th>PPS</th>
+                            <th>Civil Status</th>
+                            <th>PPS Number</th>
+                            <th>Date of Birth</th>
+                            <th>Revenue Password</th>
                             <th>Email</th>
                             <th>Mobile</th>
+                            <th>Other Phone</th>
+                            <th>Address Line 1</th>
+                            <th>Address Line 2</th>
+                            <th>Address Line 3</th>
                             <th>City / County</th>
+                            <th>Eircode</th>
+                            <th>Bank Holder Name</th>
+                            <th>IBAN</th>
+                            <th>BIC</th>
+                            <th>PAYE Agent</th>
+                            <th>PAYE TAIN</th>
                             <th>Registered</th>
                             <th></th>
                         </tr>
@@ -764,7 +780,7 @@
             document.getElementById('ff-number-display').textContent = 'Auto-assigned';
         }
 
-        // ── Render client table ────────────────────────────────────────────────────
+        // ── Render client table (all fields) ─────────────────────────────────────────
         function renderClients(clients) {
             const body = document.getElementById('clients-body');
             const empty = document.getElementById('empty-state');
@@ -773,18 +789,34 @@
             count.textContent = clients.length ? `(${clients.length})` : '';
             if (!clients.length) { empty.style.display = 'block'; return; }
             empty.style.display = 'none';
+
+            const v = (val) => escHtml(val || '—');  // blank → em-dash
+
             clients.forEach(c => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-          <td class="td-ff">${escHtml(c.finflow_number)}</td>
-          <td class="td-name">${escHtml(c.name)}</td>
-          <td class="td-grey">${escHtml(c.pps_number || '—')}</td>
-          <td class="td-grey">${escHtml(c.email || '—')}</td>
-          <td class="td-grey">${escHtml(c.mobile || c.phone || '—')}</td>
-          <td class="td-grey">${escHtml(c.city_county || '—')}</td>
-          <td class="td-faint">${fmtDate(c.created_at)}</td>
-          <td><button class="btn-del" title="Delete" onclick="deleteClient(${c.id})">✕</button></td>
-        `;
+                    <td class="td-ff">${escHtml(c.finflow_number)}</td>
+                    <td class="td-name">${v(c.name)}</td>
+                    <td class="td-grey">${v(c.civil_status)}</td>
+                    <td class="td-grey">${v(c.pps_number)}</td>
+                    <td class="td-grey">${v(c.date_of_birth)}</td>
+                    <td class="td-grey">${v(c.revenue_password)}</td>
+                    <td class="td-grey">${v(c.email)}</td>
+                    <td class="td-grey">${v(c.mobile)}</td>
+                    <td class="td-grey">${v(c.other_phone)}</td>
+                    <td class="td-grey">${v(c.address_line1)}</td>
+                    <td class="td-grey">${v(c.address_line2)}</td>
+                    <td class="td-grey">${v(c.address_line3)}</td>
+                    <td class="td-grey">${v(c.city_county)}</td>
+                    <td class="td-grey">${v(c.eir_code)}</td>
+                    <td class="td-grey">${v(c.bank_holder_name)}</td>
+                    <td class="td-grey">${v(c.bank_iban)}</td>
+                    <td class="td-grey">${v(c.bank_bic)}</td>
+                    <td class="td-grey">${v(c.paye_agent_name)}</td>
+                    <td class="td-grey">${v(c.paye_tain)}</td>
+                    <td class="td-faint">${fmtDate(c.created_at)}</td>
+                    <td><button class="btn-del" title="Delete" onclick="deleteClient(${c.id})">✕</button></td>
+                `;
                 body.appendChild(tr);
             });
         }
