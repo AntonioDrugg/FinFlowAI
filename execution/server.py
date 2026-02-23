@@ -162,25 +162,36 @@ def api_list_clients():
     return jsonify(cm.list_clients()), 200
 
 
+@app.get("/api/clients/<int:client_id>")
+def api_get_client(client_id: int):
+    """GET /api/clients/<id> — return a single client."""
+    record = cm.get_client(client_id)
+    if record:
+        return jsonify(record), 200
+    return jsonify({"error": f"No client with id={client_id}."}), 404
+
+
 @app.post("/api/clients")
 def api_add_client():
-    """
-    POST /api/clients
-    Body: { "name": "...", "email": "...", "phone": "..." }
-    """
-    data  = request.get_json(silent=True) or {}
-    name  = data.get("name", "").strip()
-    email = data.get("email", "").strip()
-    phone = data.get("phone", "").strip()
-
-    if not name:
+    """POST /api/clients — create a new client (all fields)."""
+    data = request.get_json(silent=True) or {}
+    if not data.get("name", "").strip():
         return jsonify({"error": "Client name is required."}), 400
-
     try:
-        record = cm.add_client(name, email, phone)
+        record = cm.add_client(data)
         return jsonify(record), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
+
+
+@app.put("/api/clients/<int:client_id>")
+def api_update_client(client_id: int):
+    """PUT /api/clients/<id> — update an existing client."""
+    data = request.get_json(silent=True) or {}
+    record = cm.update_client(client_id, data)
+    if record:
+        return jsonify(record), 200
+    return jsonify({"error": f"No client with id={client_id}."}), 404
 
 
 @app.delete("/api/clients/<int:client_id>")
