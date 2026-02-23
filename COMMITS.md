@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-23 11:51 UTC
+> Last updated: 2026-02-23 11:56 UTC
 
 ---
 
@@ -10,6 +10,8 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 28 | `2001080` | feat: remove PAYE fields from DB, form, table, and API | 2026-02-23 |
+| 27 | `7b0755f` | docs: update COMMITS.md | 2026-02-23 |
 | 26 | `ae9f9f5` | feat: slim layout, banking/address grids fixed, CSV export endpoint + Extract All button | 2026-02-23 |
 | 25 | `2e92682` | docs: update COMMITS.md | 2026-02-23 |
 | 24 | `494a680` | feat: all-fields scrollable client table, rename phone->legacy_phone in DB | 2026-02-23 |
@@ -40,6 +42,16 @@
 ---
 
 ## Details
+
+### `2001080` — feat: remove PAYE fields from DB, form, table, and API
+**Date:** 2026-02-23
+
+---
+
+### `7b0755f` — docs: update COMMITS.md
+**Date:** 2026-02-23
+
+---
 
 ### `ae9f9f5` — feat: slim layout, banking/address grids fixed, CSV export endpoint + Extract All button
 **Date:** 2026-02-23
