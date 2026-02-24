@@ -317,6 +317,64 @@ def api_export_clients_csv():
     )
 
 
+@app.post("/api/clients/import.csv")
+def api_import_clients_csv():
+    """
+    POST /api/clients/import.csv?space=<name>
+    Accepts a multipart file upload (field name: 'file').
+    Imports every row that has at least a 'name' column.
+    Auto-assigns FinFlow numbers — no existing clients are deleted.
+    Returns { added, skipped, errors: [...] }
+    """
+    space = request.args.get("space", "").strip()
+    if not space:
+        return jsonify({"error": "'space' query parameter is required."}), 400
+
+    if not sm.space_exists(space):
+        return jsonify({
+            "error": f"Space '{space}' is not registered."
+        }), 404
+
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded. Use field name 'file'."}), 400
+
+    uploaded = request.files["file"]
+    if not uploaded.filename.lower().endswith(".csv"):
+        return jsonify({"error": "Only CSV files are accepted."}), 400
+
+    added   = 0
+    skipped = 0
+    errors  = []
+
+    try:
+        text    = uploaded.stream.read().decode("utf-8-sig")   # handle BOM
+        reader  = csv.DictReader(io.StringIO(text))
+        valid_fields = set(cm.CLIENT_FIELDS)
+
+        for i, row in enumerate(reader, start=2):          # row 1 = header
+            # strip keys & values
+            row = {k.strip(): (v or "").strip() for k, v in row.items() if k}
+            name = row.get("name", "").strip()
+
+            if not name:
+                skipped += 1
+                continue
+
+            # Keep only fields the client table knows about
+            data = {k: v for k, v in row.items() if k in valid_fields}
+
+            try:
+                cm.add_client(data, space)
+                added += 1
+            except Exception as e:
+                errors.append({"row": i, "name": name, "error": str(e)})
+
+    except Exception as e:
+        return jsonify({"error": f"Could not parse CSV: {e}"}), 400
+
+    return jsonify({"added": added, "skipped": skipped, "errors": errors}), 200
+
+
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

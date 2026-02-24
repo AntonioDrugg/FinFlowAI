@@ -668,12 +668,36 @@
                 <div class="card-title">
                     <span class="card-title-icon">👥</span> Registered Clients
                 </div>
-                <div style="display:flex; align-items:center; gap:16px; margin-left:auto;">
+                <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
                     <span id="client-count"></span>
+
+                    <!-- Template download -->
+                    <button id="btn-template" onclick="downloadTemplate()" style="font-size:12.5px; font-weight:600; color:#7a6fcf;
+                               background:#f3f1fd; border:1.5px solid #c9c3f0; border-radius:7px;
+                               padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:5px;
+                               transition:background 0.18s, border-color 0.18s; font-family:inherit;"
+                        onmouseover="this.style.background='#e5e0fb'; this.style.borderColor='#9d92e0';"
+                        onmouseout="this.style.background='#f3f1fd';  this.style.borderColor='#c9c3f0';">
+                        &#128196; Template
+                    </button>
+
+                    <!-- CSV import (hidden input) -->
+                    <input type="file" id="csv-file-input" accept=".csv" style="display:none;"
+                        onchange="importClients(this)" />
+                    <button id="btn-import" onclick="document.getElementById('csv-file-input').click()" style="font-size:12.5px; font-weight:600; color:#1a7a4a;
+                               background:#f0fbf6; border:1.5px solid #b8ead1; border-radius:7px;
+                               padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:5px;
+                               transition:background 0.18s, border-color 0.18s; font-family:inherit;"
+                        onmouseover="this.style.background='#d8f5eb'; this.style.borderColor='#3ecf8e';"
+                        onmouseout="this.style.background='#f0fbf6';  this.style.borderColor='#b8ead1';">
+                        &#8593; Import
+                    </button>
+
+                    <!-- Extract all -->
                     <a href="/api/clients/export.csv" id="btn-export" style="font-size:12.5px; font-weight:600; color:#2db87a;
-                              text-decoration:none; display:flex; align-items:center; gap:5px;
-                              padding:5px 12px; border:1.5px solid #b8ead1; border-radius:7px;
-                              background:#f0fbf6; transition:background 0.18s, border-color 0.18s;"
+                               text-decoration:none; display:flex; align-items:center; gap:5px;
+                               padding:5px 12px; border:1.5px solid #b8ead1; border-radius:7px;
+                               background:#f0fbf6; transition:background 0.18s, border-color 0.18s;"
                         onmouseover="this.style.background='#d8f5eb'; this.style.borderColor='#3ecf8e';"
                         onmouseout="this.style.background='#f0fbf6'; this.style.borderColor='#b8ead1';">
                         &#8595; Extract all
@@ -870,13 +894,79 @@
             } catch { showMsg('Server error.', 'err'); }
         }
 
+        // ── Import CSV ─────────────────────────────────────────────────────────────
+        async function importClients(input) {
+            const file = input.files[0];
+            if (!file) return;
+            input.value = '';   // reset so same file can be re-selected
+
+            const btn = document.getElementById('btn-import');
+            btn.disabled = true;
+            btn.textContent = 'Importing\u2026';
+
+            const form = new FormData();
+            form.append('file', file);
+
+            try {
+                const res = await fetch(
+                    '/api/clients/import.csv?space=' + encodeURIComponent(SPACE),
+                    { method: 'POST', body: form }
+                );
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showMsg(data.error || 'Import failed.', 'err');
+                    return;
+                }
+
+                let msg = data.added + ' client(s) imported';
+                if (data.skipped) msg += ', ' + data.skipped + ' skipped (no name)';
+                if (data.errors && data.errors.length) {
+                    msg += ', ' + data.errors.length + ' error(s): ' +
+                        data.errors.map(e => 'row ' + e.row + ' (' + e.error + ')').join('; ');
+                }
+                showMsg(msg, data.errors && data.errors.length ? 'err' : 'ok');
+                loadClients();
+            } catch {
+                showMsg('Import failed. Check the file and try again.', 'err');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '\u2191 Import';
+            }
+        }
+
+        // ── Download template CSV ──────────────────────────────────────────────────
+        function downloadTemplate() {
+            const cols = [
+                'name', 'civil_status', 'pps_number', 'date_of_birth', 'revenue_password',
+                'email', 'mobile', 'other_phone',
+                'address_line1', 'address_line2', 'address_line3',
+                'city_county', 'eir_code',
+                'bank_holder_name', 'bank_iban', 'bank_bic'
+            ];
+            const csv = cols.join(',') + '\r\n';
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'finflowai_import_template.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
         // ── Enter key on any input ─────────────────────────────────────────────────
         document.querySelectorAll('input').forEach(el => {
             el.addEventListener('keydown', e => { if (e.key === 'Enter') registerClient(); });
         });
 
         // ── Init ───────────────────────────────────────────────────────────────────
+        // Point the export link at the space-scoped URL
+        const exportLink = document.getElementById('btn-export');
+        if (exportLink) exportLink.href = '/api/clients/export.csv?space=' + encodeURIComponent(SPACE);
         loadClients();
+
     </script>
 
 </body>
