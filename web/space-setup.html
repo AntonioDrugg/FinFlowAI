@@ -371,85 +371,6 @@
             line-height: 1.6;
         }
 
-        /* Spaces registry table */
-        .spaces-grid {
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            gap: 0;
-        }
-
-        .space-row {
-            display: contents;
-        }
-
-        .space-row>* {
-            padding: 9px 14px;
-            border-bottom: 1px solid #f5f7f9;
-            font-size: 13px;
-            vertical-align: middle;
-            display: flex;
-            align-items: center;
-        }
-
-        .space-row:last-child>* {
-            border-bottom: none;
-        }
-
-        .code-pill {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 28px;
-            background: linear-gradient(135deg, #eef6ff, #dceefa);
-            border: 1px solid #b8d8f8;
-            border-radius: 7px;
-            font-size: 12px;
-            font-weight: 800;
-            color: #1a5fa8;
-            letter-spacing: 0.06em;
-        }
-
-        .code-pill.green {
-            background: linear-gradient(135deg, #f0fff4, #e0faea);
-            border-color: #9adbb8;
-            color: #1a7a4a;
-        }
-
-        /* Space form - 2 col layout */
-        .form-row-2 {
-            display: grid;
-            grid-template-columns: 1fr 120px auto;
-            gap: 10px;
-            align-items: end;
-        }
-
-        .form-group input.code-input {
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .btn-add-space {
-            font-family: 'Inter', sans-serif;
-            font-size: 13.5px;
-            font-weight: 600;
-            color: #fff;
-            background: linear-gradient(135deg, #1a7a4a, #166a40);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: opacity 0.18s;
-            box-shadow: 0 2px 8px rgba(26, 122, 74, 0.25);
-        }
-
-        .btn-add-space:hover {
-            opacity: 0.88;
-        }
-
         /* Toast notification */
         .toast {
             position: fixed;
@@ -523,36 +444,6 @@
             <p class="page-subtitle">Manage users and configuration for your workspace.</p>
         </div>
 
-        <!-- ─── SECTION 0: Registered Spaces ──────────────────────────── -->
-        <div class="card">
-            <div class="card-title">🌐 Registered Spaces</div>
-
-            <!-- Existing spaces list -->
-            <div id="spaces-list" style="margin-bottom:14px;">
-                <div style="color:#b0c4cf; font-size:13px; padding:8px 0;">Loading spaces…</div>
-            </div>
-
-            <!-- Register new space form -->
-            <div style="padding-top:10px; border-top:1px solid #f0f3f5;">
-                <div
-                    style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#9ab0bf; margin-bottom:8px;">
-                    Register New Space</div>
-                <div class="form-row-2">
-                    <div class="form-group">
-                        <label for="s-name">Space Name</label>
-                        <input id="s-name" type="text" placeholder="e.g. acme-tax" autocomplete="off" />
-                    </div>
-                    <div class="form-group">
-                        <label for="s-code">2-Letter Code</label>
-                        <input id="s-code" type="text" maxlength="2" placeholder="AT" class="code-input"
-                            autocomplete="off" />
-                    </div>
-                    <button class="btn-add-space" id="btn-add-space" onclick="registerSpace()">+ Register</button>
-                </div>
-                <p style="margin-top:7px; font-size:11.5px; color:#b0c4cf;">The code must be exactly 2 letters and
-                    unique. It will prefix all client numbers in that space (e.g. AT-0001).</p>
-            </div>
-        </div>
 
         <!-- ─── SECTION 1: Active Space ──────────────────────────────────── -->
         <div class="card">
@@ -657,70 +548,6 @@
             catch { return iso; }
         }
 
-        // ── Spaces ────────────────────────────────────────────────────────────────
-        async function loadSpaces() {
-            try {
-                const res = await fetch('/api/spaces');
-                const spaces = await res.json();
-                renderSpaces(spaces);
-            } catch (e) {
-                document.getElementById('spaces-list').innerHTML =
-                    '<div style="color:#a93226;font-size:13px;">Could not load spaces.</div>';
-            }
-        }
-
-        function renderSpaces(spaces) {
-            const container = document.getElementById('spaces-list');
-            if (!spaces.length) {
-                container.innerHTML = '<div style="color:#b0c4cf;font-size:13px;padding:8px 0;">No spaces registered yet.</div>';
-                return;
-            }
-            const rows = spaces.map(sp => {
-                const isActive = sp.name === SPACE;
-                return `
-                    <div style="display:flex;align-items:center;gap:12px;padding:8px 4px;border-bottom:1px solid #f0f3f5;">
-                        <span class="code-pill${isActive ? ' green' : ''}">${escHtml(sp.code)}</span>
-                        <span style="font-size:13.5px;font-weight:${isActive ? '700' : '500'};color:#1e3a4f;flex:1;">${escHtml(sp.name)}</span>
-                        ${isActive ? '<span style="font-size:11px;font-weight:700;color:#1a7a4a;background:#e0faea;padding:3px 10px;border-radius:20px;">Active</span>' : ''}
-                        <span style="font-size:11px;color:#b0c4cf;">${fmtDate(sp.created_at)}</span>
-                    </div>`;
-            }).join('');
-            container.innerHTML = rows;
-        }
-
-        async function registerSpace() {
-            const name = document.getElementById('s-name').value.trim().toLowerCase();
-            const code = document.getElementById('s-code').value.trim().toUpperCase();
-
-            if (!name) { toast('Space name is required.', true); return; }
-            if (code.length !== 2 || !/^[A-Z]{2}$/.test(code)) {
-                toast('Code must be exactly 2 letters (A-Z).', true); return;
-            }
-
-            const btn = document.getElementById('btn-add-space');
-            btn.disabled = true; btn.textContent = 'Registering\u2026';
-
-            try {
-                const res = await fetch('/api/spaces', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, code }),
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    toast('Space \u201c' + name + '\u201d registered with code ' + code + '.');
-                    document.getElementById('s-name').value = '';
-                    document.getElementById('s-code').value = '';
-                    loadSpaces();
-                } else {
-                    toast(data.error || 'Failed to register space.', true);
-                }
-            } catch (e) {
-                toast('Network error. Please try again.', true);
-            } finally {
-                btn.disabled = false; btn.textContent = '+ Register';
-            }
-        }
 
         // ── Users ─────────────────────────────────────────────────────────────────
         async function loadUsers() {
@@ -806,20 +633,10 @@
             }
         }
 
-        // ── Auto-uppercase code field ──────────────────────────────────────────────
-        document.getElementById('s-code').addEventListener('input', function () {
-            this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '');
-        });
-
-        // ── Enter key shortcuts ────────────────────────────────────────────────────
+        // ── Enter key shortcut (user form) ────────────────────────────────────────
         ['f-login', 'f-password', 'f-name'].forEach(id => {
             document.getElementById(id).addEventListener('keydown', e => {
                 if (e.key === 'Enter') addUser();
-            });
-        });
-        ['s-name', 's-code'].forEach(id => {
-            document.getElementById(id).addEventListener('keydown', e => {
-                if (e.key === 'Enter') registerSpace();
             });
         });
 
@@ -832,7 +649,6 @@
         }
 
         // ── Init ───────────────────────────────────────────────────────────────────
-        loadSpaces();
         loadUsers();
     </script>
 
