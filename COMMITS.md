@@ -2,7 +2,7 @@
 
 > This file is updated with every commit pushed to the repository.
 > To regenerate it automatically, run: `python execution/update_commits.py`
-> Last updated: 2026-02-23 17:19 UTC
+> Last updated: 2026-02-24 15:43 UTC
 
 ---
 
@@ -10,6 +10,9 @@
 
 | # | Hash | Description | Date |
 |---|------|-------------|------|
+| 37 | `0caf12a` | feat: spaces registry with 2-letter code, space-gated user and client creation | 2026-02-24 |
+| 36 | `7c4f734` | feat: space-scoped client database with GE prefix on finflow numbers | 2026-02-24 |
+| 35 | `3704ca2` | docs: update COMMITS.md | 2026-02-23 |
 | 34 | `73d16f9` | feat: Space Setup page, Home link on all pages, consistent navbar | 2026-02-23 |
 | 33 | `fd9f4f3` | fix: swap Back/Run buttons in footer â€” Run left, Back right | 2026-02-23 |
 | 32 | `eb09f24` | docs: update COMMITS.md | 2026-02-23 |
@@ -48,6 +51,21 @@
 ---
 
 ## Details
+
+### `0caf12a` — feat: spaces registry with 2-letter code, space-gated user and client creation
+**Date:** 2026-02-24
+
+---
+
+### `7c4f734` — feat: space-scoped client database with GE prefix on finflow numbers
+**Date:** 2026-02-24
+
+---
+
+### `3704ca2` — docs: update COMMITS.md
+**Date:** 2026-02-23
+
+---
 
 ### `73d16f9` — feat: Space Setup page, Home link on all pages, consistent navbar
 **Date:** 2026-02-23
