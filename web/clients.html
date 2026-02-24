@@ -552,6 +552,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="f-crn">Client Registration Number</label>
+                    <input id="f-crn" type="text" placeholder="e.g. CRN-12345" autocomplete="off" />
+                </div>
+
+                <div class="form-group">
                     <label for="f-pps">PPS Number</label>
                     <input id="f-pps" type="text" placeholder="1234567T" autocomplete="off" />
                 </div>
@@ -711,6 +716,7 @@
                             <th>FF #</th>
                             <th>Name</th>
                             <th>Civil Status</th>
+                            <th>Reg. Number</th>
                             <th>PPS Number</th>
                             <th>Date of Birth</th>
                             <th>Revenue Password</th>
@@ -784,6 +790,7 @@
                 space: SPACE,
                 name: document.getElementById('f-name').value,
                 civil_status: document.getElementById('f-civil').value,
+                client_reg_number: document.getElementById('f-crn').value,
                 pps_number: document.getElementById('f-pps').value,
                 date_of_birth: document.getElementById('f-dob').value,
                 revenue_password: document.getElementById('f-revpwd').value,
@@ -802,7 +809,7 @@
         }
 
         function clearForm() {
-            ['f-name', 'f-civil', 'f-pps', 'f-dob', 'f-revpwd', 'f-email', 'f-mobile',
+            ['f-name', 'f-civil', 'f-crn', 'f-pps', 'f-dob', 'f-revpwd', 'f-email', 'f-mobile',
                 'f-othphone', 'f-addr1', 'f-addr2', 'f-addr3', 'f-city', 'f-eircode',
                 'f-bankname', 'f-iban', 'f-bic'].forEach(id => {
                     const el = document.getElementById(id);
@@ -829,6 +836,7 @@
                     <td class="td-ff">${escHtml(c.finflow_number)}</td>
                     <td class="td-name">${v(c.name)}</td>
                     <td class="td-grey">${v(c.civil_status)}</td>
+                    <td class="td-grey">${v(c.client_reg_number)}</td>
                     <td class="td-grey">${v(c.pps_number)}</td>
                     <td class="td-grey">${v(c.date_of_birth)}</td>
                     <td class="td-grey">${v(c.revenue_password)}</td>
@@ -938,7 +946,7 @@
         // ── Download template CSV ──────────────────────────────────────────────────
         function downloadTemplate() {
             const cols = [
-                'name', 'civil_status', 'pps_number', 'date_of_birth', 'revenue_password',
+                'name', 'civil_status', 'client_reg_number', 'pps_number', 'date_of_birth', 'revenue_password',
                 'email', 'mobile', 'other_phone',
                 'address_line1', 'address_line2', 'address_line3',
                 'city_county', 'eir_code',

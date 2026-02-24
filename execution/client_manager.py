@@ -17,6 +17,7 @@ DB_PATH  = BASE_DIR / ".tmp" / "finflowai.db"
 CLIENT_FIELDS = [
     "name",
     "civil_status",
+    "client_reg_number",
     "pps_number",
     "date_of_birth",
     "revenue_password",
