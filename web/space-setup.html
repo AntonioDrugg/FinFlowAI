@@ -451,6 +451,10 @@
                 <span class="info-label">Space Name</span>
                 <span class="space-badge" id="space-name-display">—</span>
 
+                <span class="info-label">Space Code</span>
+                <span class="space-badge" id="space-code-display"
+                    style="background:linear-gradient(135deg,#f0fff4,#e0faea);border-color:#9adbb8;color:#1a7a4a;">—</span>
+
                 <span class="info-label">Logged in as</span>
                 <span class="info-value" id="user-login-display">—</span>
             </div>
@@ -515,7 +519,13 @@
         const SPACE = sessionStorage.getItem('finflow_space') || '';
         const LOGIN = sessionStorage.getItem('finflow_login') || '';
 
+        function spaceCode(s) {
+            s = (s || '').trim();
+            return s.length >= 2 ? s.slice(0, 2).toUpperCase() : (s ? s.toUpperCase() : '??');
+        }
+
         document.getElementById('space-name-display').textContent = SPACE || '(unknown)';
+        document.getElementById('space-code-display').textContent = spaceCode(SPACE);
         document.getElementById('user-login-display').textContent = LOGIN || '(unknown)';
 
         // ── Toast ─────────────────────────────────────────────────────────────────

@@ -584,7 +584,7 @@
                         <thead>
                             <tr>
                                 <th class="td-cb"></th>
-                                <th>FF #</th>
+                                <th>Ref #</th>
                                 <th>Name</th>
                                 <th>PPS Number</th>
                                 <th>Email</th>
@@ -637,9 +637,15 @@
         }
 
         // ── Load clients ─────────────────────────────────────────────────────────
+        const SPACE = sessionStorage.getItem('finflow_space') || '';
+        function spaceCode(s) {
+            s = (s || '').trim();
+            return s.length >= 2 ? s.slice(0, 2).toUpperCase() : (s ? s.toUpperCase() : 'FF');
+        }
+
         async function loadClients() {
             try {
-                const res = await fetch('/api/clients');
+                const res = await fetch('/api/clients?space=' + encodeURIComponent(SPACE));
                 const data = await res.json();
                 renderClients(data);
             } catch (e) {

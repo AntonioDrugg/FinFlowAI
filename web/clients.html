@@ -745,8 +745,19 @@
         }
 
         // ── Collect form data ──────────────────────────────────────────────────────
+        // ── Space ────────────────────────────────────────────────────
+        const SPACE = sessionStorage.getItem('finflow_space') || '';
+        function spaceCode(s) {
+            s = (s || '').trim();
+            return s.length >= 2 ? s.slice(0, 2).toUpperCase() : (s ? s.toUpperCase() : 'FF');
+        }
+        const PREFIX = spaceCode(SPACE);
+        document.getElementById('ff-number-display').textContent = PREFIX + '-Auto';
+
+        // ── Collect form data ───────────────────────────────────────────────
         function getFormData() {
             return {
+                space: SPACE,
                 name: document.getElementById('f-name').value,
                 civil_status: document.getElementById('f-civil').value,
                 pps_number: document.getElementById('f-pps').value,
@@ -773,7 +784,7 @@
                     const el = document.getElementById(id);
                     if (el) el.value = '';
                 });
-            document.getElementById('ff-number-display').textContent = 'Auto-assigned';
+            document.getElementById('ff-number-display').textContent = PREFIX + '-Auto';
         }
 
         // ── Render client table (all fields) ─────────────────────────────────────────
@@ -818,7 +829,7 @@
         // ── Load clients ───────────────────────────────────────────────────────────
         async function loadClients() {
             try {
-                const res = await fetch('/api/clients');
+                const res = await fetch('/api/clients?space=' + encodeURIComponent(SPACE));
                 renderClients(await res.json());
             } catch { showMsg('Could not load clients. Is the server running?', 'err'); }
         }
@@ -853,7 +864,7 @@
         async function deleteClient(id) {
             if (!confirm('Delete this client? This cannot be undone.')) return;
             try {
-                const res = await fetch(`/api/clients/${id}`, { method: 'DELETE' });
+                const res = await fetch('/api/clients/' + id + '?space=' + encodeURIComponent(SPACE), { method: 'DELETE' });
                 if (res.ok) loadClients();
                 else showMsg('Could not delete client.', 'err');
             } catch { showMsg('Server error.', 'err'); }

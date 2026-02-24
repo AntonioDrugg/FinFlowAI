@@ -166,17 +166,22 @@ def api_delete_user(record_id: int):
 
 
 # ── API: Clients ───────────────────────────────────────────────────────────────
+# All client endpoints are scoped by space.  The caller always passes
+# ?space=<name>  (GET/DELETE) or { "space": "<name>" } in the JSON body
+# (POST / PUT) so that each space's data is fully isolated.
 
 @app.get("/api/clients")
 def api_list_clients():
-    """GET /api/clients — return all clients."""
-    return jsonify(cm.list_clients()), 200
+    """GET /api/clients?space=<name> — return all clients for the given space."""
+    space = request.args.get("space", "").strip()
+    return jsonify(cm.list_clients(space)), 200
 
 
 @app.get("/api/clients/<int:client_id>")
 def api_get_client(client_id: int):
-    """GET /api/clients/<id> — return a single client."""
-    record = cm.get_client(client_id)
+    """GET /api/clients/<id>?space=<name> — return a single client."""
+    space = request.args.get("space", "").strip()
+    record = cm.get_client(client_id, space)
     if record:
         return jsonify(record), 200
     return jsonify({"error": f"No client with id={client_id}."}), 404
@@ -184,12 +189,15 @@ def api_get_client(client_id: int):
 
 @app.post("/api/clients")
 def api_add_client():
-    """POST /api/clients — create a new client (all fields)."""
-    data = request.get_json(silent=True) or {}
+    """POST /api/clients — create a new client. Body must include 'space' and 'name'."""
+    data  = request.get_json(silent=True) or {}
+    space = data.pop("space", "").strip()
+    if not space:
+        return jsonify({"error": "'space' is required."}), 400
     if not data.get("name", "").strip():
         return jsonify({"error": "Client name is required."}), 400
     try:
-        record = cm.add_client(data)
+        record = cm.add_client(data, space)
         return jsonify(record), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -197,40 +205,41 @@ def api_add_client():
 
 @app.put("/api/clients/<int:client_id>")
 def api_update_client(client_id: int):
-    """PUT /api/clients/<id> — update an existing client."""
-    data = request.get_json(silent=True) or {}
-    record = cm.update_client(client_id, data)
+    """PUT /api/clients/<id> — update a client. Body must include 'space'."""
+    data  = request.get_json(silent=True) or {}
+    space = data.pop("space", "").strip()
+    record = cm.update_client(client_id, data, space)
     if record:
         return jsonify(record), 200
-    return jsonify({"error": f"No client with id={client_id}."}), 404
+    return jsonify({"error": f"No client with id={client_id} in space '{space}'."}), 404
 
 
 @app.delete("/api/clients/<int:client_id>")
 def api_delete_client(client_id: int):
-    """DELETE /api/clients/<id>"""
-    if cm.delete_client(client_id):
+    """DELETE /api/clients/<id>?space=<name>"""
+    space = request.args.get("space", "").strip()
+    if cm.delete_client(client_id, space):
         return jsonify({"message": f"Client {client_id} deleted."}), 200
-    return jsonify({"error": f"No client with id={client_id}."}), 404
+    return jsonify({"error": f"No client with id={client_id} in space '{space}'."}), 404
 
 
 @app.get("/api/clients/export.csv")
 def api_export_clients_csv():
     """
-    GET /api/clients/export.csv
-    Returns a downloadable CSV with all registered clients.
-    Excluded fields: revenue_password, legacy_phone.
+    GET /api/clients/export.csv?space=<name>
+    Returns a downloadable CSV for the given space.
+    Excluded fields: revenue_password, legacy_phone, space.
     """
-    EXCLUDED = {"revenue_password", "legacy_phone"}
+    EXCLUDED = {"revenue_password", "legacy_phone", "space"}
+    space = request.args.get("space", "").strip()
 
-    clients = cm.list_clients()          # list of dicts, already enriched
+    clients = cm.list_clients(space)
     if not clients:
-        # Return an empty CSV with just headers if no clients yet
         all_keys = ["finflow_number", "id", "name", "civil_status", "pps_number",
                     "date_of_birth", "email", "mobile", "other_phone",
                     "address_line1", "address_line2", "address_line3",
                     "city_county", "eir_code", "bank_holder_name",
-                    "bank_iban", "bank_bic", "paye_agent_name",
-                    "paye_tain", "created_at"]
+                    "bank_iban", "bank_bic"]
     else:
         all_keys = [k for k in clients[0].keys() if k not in EXCLUDED]
 
@@ -246,11 +255,13 @@ def api_export_clients_csv():
         writer.writerow({k: row.get(k, "") for k in all_keys})
 
     csv_bytes = buf.getvalue().encode("utf-8-sig")   # BOM for Excel compatibility
+    prefix = cm.space_code(space)
+    filename = f"finflowai_{prefix.lower()}_clients.csv"
     return Response(
         csv_bytes,
         mimetype="text/csv",
         headers={
-            "Content-Disposition": "attachment; filename=finflowai_clients.csv",
+            "Content-Disposition": f"attachment; filename={filename}",
             "Content-Length": str(len(csv_bytes)),
         }
     )
