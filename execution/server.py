@@ -23,6 +23,7 @@ import csv, io
 
 import user_manager as um
 import client_manager as cm
+import space_manager as sm
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 load_dotenv(BASE_DIR / ".env")
@@ -132,7 +133,7 @@ def api_add_user():
     """
     POST /api/users
     Body: { "space": "...", "login": "...", "password": "..." }
-    Returns 201 on success, 409 on duplicate, 400 on missing fields.
+    Returns 201 on success, 409 on duplicate, 400 on missing fields, 404 if space not registered.
     """
     data = request.get_json(silent=True) or {}
     space    = data.get("space", "").strip()
@@ -143,9 +144,14 @@ def api_add_user():
     if not all([space, login, password]):
         return jsonify({"error": "All fields (space, login, password) are required."}), 400
 
+    # Enforce space registration
+    if not sm.space_exists(space):
+        return jsonify({
+            "error": f"Space '{space}' is not registered. Register the space first in Space Setup."
+        }), 404
+
     try:
         record = um.add_user(space, login, password, name)
-        # Don't return the hash
         record.pop("password_hash", None)
         return jsonify(record), 201
     except ValueError as e:
@@ -163,6 +169,43 @@ def api_delete_user(record_id: int):
         return jsonify({"message": f"Record {record_id} deleted."}), 200
     else:
         return jsonify({"error": f"No record with id={record_id}."}), 404
+
+
+# ── API: Spaces ───────────────────────────────────────────────────────────────
+# A space must exist here before users or clients can be created in it.
+
+@app.get("/api/spaces")
+def api_list_spaces():
+    """GET /api/spaces -- list all registered spaces."""
+    return jsonify(sm.list_spaces()), 200
+
+
+@app.post("/api/spaces")
+def api_create_space():
+    """
+    POST /api/spaces
+    Body: { "name": "acme-tax", "code": "AT" }
+    Returns 201 on success, 409 on duplicate, 400 on validation error.
+    """
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "").strip()
+    code = data.get("code", "").strip()
+    if not name or not code:
+        return jsonify({"error": "Both 'name' and 'code' are required."}), 400
+    try:
+        space = sm.create_space(name, code)
+        return jsonify(space), 201
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 409
+
+
+@app.get("/api/spaces/<space_name>")
+def api_get_space(space_name: str):
+    """GET /api/spaces/<name> -- get a single space by name."""
+    space = sm.get_space(space_name)
+    if space:
+        return jsonify(space), 200
+    return jsonify({"error": f"Space '{space_name}' is not registered."}), 404
 
 
 # ── API: Clients ───────────────────────────────────────────────────────────────
@@ -189,13 +232,20 @@ def api_get_client(client_id: int):
 
 @app.post("/api/clients")
 def api_add_client():
-    """POST /api/clients — create a new client. Body must include 'space' and 'name'."""
+    """POST /api/clients -- create a new client. Body must include 'space' and 'name'."""
     data  = request.get_json(silent=True) or {}
     space = data.pop("space", "").strip()
     if not space:
         return jsonify({"error": "'space' is required."}), 400
     if not data.get("name", "").strip():
         return jsonify({"error": "Client name is required."}), 400
+
+    # Enforce space registration
+    if not sm.space_exists(space):
+        return jsonify({
+            "error": f"Space '{space}' is not registered. Register the space first in Space Setup."
+        }), 404
+
     try:
         record = cm.add_client(data, space)
         return jsonify(record), 201
