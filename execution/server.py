@@ -23,8 +23,9 @@ import csv, io
 
 import user_manager as um
 import client_manager as cm
-import space_manager   as sm
-import refund_processor as rp
+import space_manager        as sm
+import refund_processor     as rp
+import space_settings_manager as ssm
 
 
 # ── Config ─────────────────────────────────────────────────────────────────────
@@ -408,7 +409,43 @@ def api_run_refunds():
 
 
 
+# ── Space Settings ─────────────────────────────────────────────────────────────
+
+@app.get("/api/spaces/<name>/settings")
+def api_get_space_settings(name: str):
+    """GET /api/spaces/<name>/settings — return TAIN + ROS ID for the space."""
+    name = name.strip().lower()
+    if not sm.space_exists(name):
+        return jsonify({"error": f"Space '{name}' not found."}), 404
+    return jsonify(ssm.get_settings(name)), 200
+
+
+@app.put("/api/spaces/<name>/settings")
+def api_update_space_settings(name: str):
+    """
+    PUT /api/spaces/<name>/settings
+    Body: { "tain": "...", "ros_id": "..." }  (either or both)
+    """
+    name = name.strip().lower()
+    if not sm.space_exists(name):
+        return jsonify({"error": f"Space '{name}' not found."}), 404
+
+    data   = request.get_json(silent=True) or {}
+    tain   = data.get("tain")
+    ros_id = data.get("ros_id")
+
+    if tain is None and ros_id is None:
+        return jsonify({"error": "Provide at least 'tain' or 'ros_id'."}), 400
+
+    try:
+        record = ssm.upsert_settings(name, tain=tain, ros_id=ros_id)
+        return jsonify(record), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
 if __name__ == "__main__":
+
     port = int(os.getenv("FLASK_PORT", 5000))
     debug = os.getenv("FLASK_DEBUG", "true").lower() == "true"
     print(f"FinFlowAI server starting at http://localhost:{port}")

@@ -371,7 +371,51 @@
             line-height: 1.6;
         }
 
-        /* Toast notification */
+        /* Settings form inside Active Space card */
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid #f0f3f5;
+        }
+
+        .settings-row .form-group {
+            margin: 0;
+        }
+
+        .btn-save-settings {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #2a5270, #1e3a4f);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 22px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.18s;
+            box-shadow: 0 2px 8px rgba(30, 58, 79, 0.20);
+        }
+
+        .btn-save-settings:hover:not(:disabled) {
+            opacity: 0.85;
+        }
+
+        .btn-save-settings:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .settings-hint {
+            font-size: 11.5px;
+            color: #b0c4cf;
+            margin-top: 7px;
+        }
+
         .toast {
             position: fixed;
             bottom: 28px;
@@ -459,7 +503,25 @@
                 <span class="info-label">Logged in as</span>
                 <span class="info-value" id="user-login-display">—</span>
             </div>
+
+            <!-- Editable settings -->
+            <div class="settings-row">
+                <div class="form-group">
+                    <label for="s-tain">Tax Advisor Identification Number (TAIN)</label>
+                    <input id="s-tain" type="text" placeholder="e.g. 1234567T" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label for="s-ros">ROS Identification</label>
+                    <input id="s-ros" type="text" placeholder="ROS user ID" autocomplete="off" />
+                </div>
+                <button class="btn-save-settings" id="btn-save-settings" onclick="saveSettings()">
+                    💾 Save
+                </button>
+            </div>
+            <p class="settings-hint">Changes to TAIN and ROS Identification are saved to the database when you click
+                Save.</p>
         </div>
+
 
         <!-- ─── SECTION 2: Add User ───────────────────────────────────────── -->
         <div class="card">
@@ -548,6 +610,48 @@
             catch { return iso; }
         }
 
+
+        // ── Space Settings (TAIN + ROS) ────────────────────────────────────────────────
+        async function loadSettings() {
+            if (!SPACE) return;
+            try {
+                const res = await fetch('/api/spaces/' + encodeURIComponent(SPACE) + '/settings');
+                if (!res.ok) return;
+                const data = await res.json();
+                document.getElementById('s-tain').value = data.tain || '';
+                document.getElementById('s-ros').value = data.ros_id || '';
+            } catch (e) {
+                // silently ignore — fields stay blank
+            }
+        }
+
+        async function saveSettings() {
+            const tain = document.getElementById('s-tain').value.trim();
+            const ros_id = document.getElementById('s-ros').value.trim();
+            const btn = document.getElementById('btn-save-settings');
+
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+
+            try {
+                const res = await fetch('/api/spaces/' + encodeURIComponent(SPACE) + '/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tain, ros_id }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    toast('Settings saved successfully.');
+                } else {
+                    toast(data.error || 'Could not save settings.', true);
+                }
+            } catch (e) {
+                toast('Network error. Please try again.', true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Save';
+            }
+        }
 
         // ── Users ─────────────────────────────────────────────────────────────────
         async function loadUsers() {
@@ -649,6 +753,7 @@
         }
 
         // ── Init ───────────────────────────────────────────────────────────────────
+        loadSettings();
         loadUsers();
     </script>
 
