@@ -23,7 +23,9 @@ import csv, io
 
 import user_manager as um
 import client_manager as cm
-import space_manager as sm
+import space_manager   as sm
+import refund_processor as rp
+
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 load_dotenv(BASE_DIR / ".env")
@@ -375,7 +377,36 @@ def api_import_clients_csv():
     return jsonify({"added": added, "skipped": skipped, "errors": errors}), 200
 
 
-# ── Entry point ────────────────────────────────────────────────────────────────
+# ── Processes ─────────────────────────────────────────────────────────────────
+
+@app.post("/api/processes/refunds")
+def api_run_refunds():
+    """
+    POST /api/processes/refunds
+    Body: { "space": "...", "client_ids": [1, 2, 3] }
+    Runs the refund check sequentially for each client_id in order.
+    Returns: { "results": [ { ...per-client result... }, ... ] }
+    """
+    data       = request.get_json(silent=True) or {}
+    space      = data.get("space", "").strip()
+    client_ids = data.get("client_ids", [])
+
+    if not space:
+        return jsonify({"error": "'space' is required."}), 400
+    if not isinstance(client_ids, list) or len(client_ids) == 0:
+        return jsonify({"error": "'client_ids' must be a non-empty list."}), 400
+    if not sm.space_exists(space):
+        return jsonify({"error": f"Space '{space}' is not registered."}), 404
+
+    try:
+        client_ids = [int(i) for i in client_ids]
+    except (TypeError, ValueError):
+        return jsonify({"error": "All client_ids must be integers."}), 400
+
+    results = rp.run_refunds(client_ids, space)
+    return jsonify({"results": results}), 200
+
+
 
 if __name__ == "__main__":
     port = int(os.getenv("FLASK_PORT", 5000))

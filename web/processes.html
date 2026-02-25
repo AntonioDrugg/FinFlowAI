@@ -489,6 +489,168 @@
         .footer-info strong {
             color: #2a5270;
         }
+
+        /* ══ PROCESS RESULTS PANEL ═══════════════════════════════════════════ */
+        .results-panel {
+            margin-top: 20px;
+            display: none;
+            /* shown when a run starts */
+        }
+
+        .results-header {
+            padding: 14px 20px 10px;
+            border-bottom: 1px solid #f0f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .results-meta {
+            font-size: 12px;
+            color: #9ab0bf;
+        }
+
+        .results-body {
+            padding: 8px 12px;
+        }
+
+        .result-row {
+            display: grid;
+            grid-template-columns: 90px 1fr auto 140px;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 8px;
+            border-bottom: 1px solid #f5f7f9;
+            border-radius: 6px;
+            transition: background 0.2s;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-ff {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #2a82da;
+            letter-spacing: 0.04em;
+        }
+
+        .result-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a4f;
+        }
+
+        .result-msg {
+            font-size: 12px;
+            color: #7a95a8;
+            margin-top: 2px;
+        }
+
+        .result-ts {
+            font-size: 11px;
+            color: #b0c4cf;
+            text-align: right;
+        }
+
+        /* Status pill */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .status-pill.success {
+            background: #e0faea;
+            color: #1a7a4a;
+        }
+
+        .status-pill.error {
+            background: #fff0ee;
+            color: #c0392b;
+        }
+
+        .status-pill.pending {
+            background: #fff8e1;
+            color: #b07a00;
+        }
+
+        .status-pill.no_data {
+            background: #f0f3f5;
+            color: #7a95a8;
+        }
+
+        .status-pill.running {
+            background: #eef6ff;
+            color: #2a82da;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .results-summary {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 20px;
+            background: #f7f9fb;
+            border-top: 1px solid #f0f3f5;
+            font-size: 12px;
+            color: #7a95a8;
+        }
+
+        .sum-pill {
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11.5px;
+        }
+
+        .sum-pill.ok {
+            background: #e0faea;
+            color: #1a7a4a;
+        }
+
+        .sum-pill.err {
+            background: #fff0ee;
+            color: #c0392b;
+        }
+
+        .sum-pill.pen {
+            background: #fff8e1;
+            color: #b07a00;
+        }
     </style>
 </head>
 
@@ -600,8 +762,24 @@
                 </div>
             </div>
 
+        </div><!-- /split-layout -->
+
+        <!-- ══ PROCESS RESULTS PANEL ═══════════════════════════════ -->
+        <div class="panel results-panel" id="results-panel">
+            <div class="results-header">
+                <div class="panel-title">&#128202; Process Results</div>
+                <span class="results-meta" id="results-meta"></span>
+            </div>
+            <div class="results-body" id="results-body"></div>
+            <div class="results-summary" id="results-summary" style="display:none;">
+                Completed &nbsp;
+                <span class="sum-pill ok" id="sum-ok"></span>
+                <span class="sum-pill err" id="sum-err"></span>
+                <span class="sum-pill pen" id="sum-pen"></span>
+            </div>
         </div>
-    </div>
+
+    </div><!-- /page -->
 
     <!-- ══ FOOTER BAR ═══════════════════════════════════════════════════════ -->
     <div class="footer-bar">
@@ -744,12 +922,106 @@
             return map[key] || key;
         }
 
-        // ── Run (placeholder for now) ────────────────────────────────────────────
-        document.getElementById('btn-run').addEventListener('click', () => {
+        // ── Run Process ──────────────────────────────────────────────────────────
+        document.getElementById('btn-run').addEventListener('click', runProcess);
+
+        async function runProcess() {
             const ids = getSelectedIds();
             const proc = activeProcess;
-            alert(`Process "${formatProcessName(proc)}" queued for ${ids.length} client(s).\n\nIDs: ${ids.join(', ')}\n\n(API integration coming soon)`);
-        });
+            if (!ids.length || !proc) return;
+
+            const btnRun = document.getElementById('btn-run');
+            btnRun.disabled = true;
+            btnRun.textContent = '⏳ Running…';
+
+            // Show results panel and clear previous content
+            const panel = document.getElementById('results-panel');
+            const body = document.getElementById('results-body');
+            const meta = document.getElementById('results-meta');
+            const summary = document.getElementById('results-summary');
+            panel.style.display = 'block';
+            body.innerHTML = '';
+            summary.style.display = 'none';
+            meta.textContent = `Running ${formatProcessName(proc)} for ${ids.length} client(s)…`;
+
+            // Scroll to results
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Insert a "queued" placeholder row for every selected client
+            ids.forEach(id => {
+                const row = document.createElement('div');
+                row.className = 'result-row';
+                row.id = 'result-row-' + id;
+                row.innerHTML =
+                    '<div class="result-ff"  id="rff-' + id + '">—</div>' +
+                    '<div>' +
+                    '<div class="result-name" id="rname-' + id + '">—</div>' +
+                    '<div class="result-msg"  id="rmsg-' + id + '">⋯ Waiting…</div>' +
+                    '</div>' +
+                    '<span class="status-pill running" id="rpill-' + id + '">⏱ Queued</span>' +
+                    '<div class="result-ts" id="rts-' + id + '"></div>';
+                body.appendChild(row);
+            });
+
+            // Call the API
+            try {
+                const res = await fetch('/api/processes/refunds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ space: SPACE, client_ids: ids.map(Number) }),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    meta.textContent = '❌ ' + (data.error || 'Process failed.');
+                    btnRun.disabled = false;
+                    btnRun.textContent = '▶ Run Process';
+                    return;
+                }
+
+                // Render results one by one
+                let ok = 0, err = 0, pen = 0;
+                const statusLabel = { success: 'Success', error: 'Error', pending: 'Pending', no_data: 'No Data' };
+                const statusIcon = { success: '✓', error: '✕', pending: '⏳', no_data: '—' };
+
+                (data.results || []).forEach(r => {
+                    const id = String(r.client_id);
+                    const pill = document.getElementById('rpill-' + id);
+                    const ff = document.getElementById('rff-' + id);
+                    const name = document.getElementById('rname-' + id);
+                    const msg = document.getElementById('rmsg-' + id);
+                    const ts = document.getElementById('rts-' + id);
+
+                    if (ff) ff.textContent = r.finflow_number || '—';
+                    if (name) name.textContent = r.name || '—';
+                    if (msg) msg.textContent = r.message || '';
+                    if (ts) ts.textContent = r.ran_at ? new Date(r.ran_at).toLocaleTimeString('en-IE') : '';
+                    if (pill) {
+                        pill.className = 'status-pill ' + (r.status || 'pending');
+                        pill.textContent = (statusIcon[r.status] || '') + ' ' + (statusLabel[r.status] || r.status);
+                    }
+
+                    if (r.status === 'success') ok++;
+                    else if (r.status === 'error') err++;
+                    else pen++;
+                });
+
+                // Summary bar
+                meta.textContent = `${formatProcessName(proc)} — ${(data.results || []).length} client(s) processed.`;
+                document.getElementById('sum-ok').textContent = ok + ' success';
+                document.getElementById('sum-err').textContent = err + ' error';
+                document.getElementById('sum-pen').textContent = pen + ' pending';
+                summary.style.display = 'flex';
+
+            } catch (e) {
+                meta.textContent = '❌ Network error. Please try again.';
+            } finally {
+                btnRun.disabled = false;
+                btnRun.textContent = '▶ Run Process';
+                updateFooter();
+            }
+        }
+
 
         // ── Log Off ──────────────────────────────────────────────────────────────
         function logOff() {
