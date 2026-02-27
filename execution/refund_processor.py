@@ -91,59 +91,83 @@ def _check_single_client(client: dict) -> dict:
 
 # ── Public API ─────────────────────────────────────────────────────────────────
 
-def run_refunds(client_ids: list[int], space: str) -> list[dict]:
-    """
-    Run the refund check for a list of client IDs, sequentially one by one.
+def check_single_client_api(client_id: int, space: str, cert_bytes: bytes, cert_password: str) -> dict:
+    ran_at = _utc_now()
+    client = _fetch_client(client_id, space)
+    
+    if client is None:
+        return {
+            "client_id":      client_id,
+            "finflow_number": "—",
+            "name":           f"(ID {client_id})",
+            "pps_number":     "—",
+            "status":         "error",
+            "message":        f"Client ID {client_id} not found in space '{space}'.",
+            "detail":         {},
+            "ran_at":         ran_at,
+        }
 
-    Args:
-        client_ids:  Ordered list of client IDs to process.
-        space:       Space name (e.g. 'ge-souza-tax').
+    # Fetch Space TAIN
+    import space_settings_manager as ssm
+    space_settings = ssm.get_settings(space)
+    tain = space_settings.get("tain")
+    
+    if not tain:
+        return {
+            "client_id":      client["id"],
+            "finflow_number": client.get("finflow_number", "—"),
+            "name":           client.get("name", "—"),
+            "pps_number":     client.get("pps_number", "—"),
+            "status":         "error",
+            "message":        f"No TAIN configured for space '{space}'. Please update Space Setup.",
+            "detail":         {},
+            "ran_at":         ran_at,
+        }
 
-    Returns:
-        List of result dicts, one per client ID, in the same order as client_ids.
-        Clients not found in the space are recorded with status='error'.
-    """
-    results = []
+    pps_number = client.get("pps_number", "")
+    if not pps_number:
+        return {
+            "client_id":      client["id"],
+            "finflow_number": client.get("finflow_number", "—"),
+            "name":           client.get("name", "—"),
+            "pps_number":     "—",
+            "status":         "error",
+            "message":        "Client has no PPS number.",
+            "detail":         {},
+            "ran_at":         ran_at,
+        }
 
-    for cid in client_ids:
-        ran_at = _utc_now()
-        client = _fetch_client(cid, space)
+    # API Payload structure (mocked)
+    payload = {
+        "clientPPS": pps_number.strip(),
+        "taxType": "PAYE",
+        "taxYear": datetime.now(timezone.utc).year,
+        "clientRegistrationRef": pps_number.strip(),
+        "agentTAIN": tain
+    }
 
-        if client is None:
-            results.append({
-                "client_id":      cid,
-                "finflow_number": "—",
-                "name":           f"(ID {cid})",
-                "pps_number":     "—",
-                "status":         "error",
-                "message":        f"Client ID {cid} not found in space '{space}'.",
-                "detail":         {},
-                "ran_at":         ran_at,
-            })
-            continue
+    # ------------------------------------------------------------------ MOCK API CALL --
+    # Here is where the code would authenticate using cert_bytes and cert_password
+    # and send the payload to the Irish Revenue API.
+    
+    outcome = {
+        "status":  "success",
+        "message": "Mocked successful refund check from Irish Revenue.",
+        "detail":  {
+            "payload_sent": payload,
+            "refund_amount": "€0.00",
+            "tax_year": payload["taxYear"]
+        }
+    }
+    # ------------------------------------------------------------------ /MOCK API CALL -
 
-        try:
-            outcome = _check_single_client(client)
-            results.append({
-                "client_id":      client["id"],
-                "finflow_number": client.get("finflow_number", "—"),
-                "name":           client.get("name", "—"),
-                "pps_number":     client.get("pps_number", "—"),
-                "status":         outcome["status"],
-                "message":        outcome["message"],
-                "detail":         outcome.get("detail", {}),
-                "ran_at":         ran_at,
-            })
-        except Exception as exc:
-            results.append({
-                "client_id":      client["id"],
-                "finflow_number": client.get("finflow_number", "—"),
-                "name":           client.get("name", "—"),
-                "pps_number":     client.get("pps_number", "—"),
-                "status":         "error",
-                "message":        f"Unexpected error: {exc}",
-                "detail":         {},
-                "ran_at":         ran_at,
-            })
-
-    return results
+    return {
+        "client_id":      client["id"],
+        "finflow_number": client.get("finflow_number", "—"),
+        "name":           client.get("name", "—"),
+        "pps_number":     pps_number.strip(),
+        "status":         outcome["status"],
+        "message":        outcome["message"],
+        "detail":         outcome.get("detail", {}),
+        "ran_at":         ran_at,
+    }

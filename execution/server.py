@@ -385,32 +385,42 @@ def api_import_clients_csv():
 
 # ── Processes ─────────────────────────────────────────────────────────────────
 
-@app.post("/api/processes/refunds")
-def api_run_refunds():
+@app.post("/api/processes/refund_single")
+def api_run_refund_single():
     """
-    POST /api/processes/refunds
-    Body: { "space": "...", "client_ids": [1, 2, 3] }
-    Runs the refund check sequentially for each client_id in order.
-    Returns: { "results": [ { ...per-client result... }, ... ] }
+    POST /api/processes/refund_single
+    Form Data:
+      - space: str
+      - client_id: int
+      - file: the .bac or .p12 certificate file
+      - password: str (optional password for the cert)
     """
-    data       = request.get_json(silent=True) or {}
-    space      = data.get("space", "").strip()
-    client_ids = data.get("client_ids", [])
+    space = request.form.get("space", "").strip()
+    try:
+        client_id = int(request.form.get("client_id", 0))
+    except ValueError:
+        return jsonify({"error": "client_id must be an integer."}), 400
+
+    password = request.form.get("password", "")
 
     if not space:
         return jsonify({"error": "'space' is required."}), 400
-    if not isinstance(client_ids, list) or len(client_ids) == 0:
-        return jsonify({"error": "'client_ids' must be a non-empty list."}), 400
     if not sm.space_exists(space):
         return jsonify({"error": f"Space '{space}' is not registered."}), 404
 
-    try:
-        client_ids = [int(i) for i in client_ids]
-    except (TypeError, ValueError):
-        return jsonify({"error": "All client_ids must be integers."}), 400
+    if "file" not in request.files:
+        return jsonify({"error": "ROS Certificate file ('file') is required."}), 400
 
-    results = rp.run_refunds(client_ids, space)
-    return jsonify({"results": results}), 200
+    uploaded_file = request.files["file"]
+    cert_bytes = uploaded_file.read()
+
+    if not cert_bytes:
+        return jsonify({"error": "Uploaded certificate file is empty."}), 400
+
+    # Execute the single client refund check
+    result = rp.check_single_client_api(client_id, space, cert_bytes, password)
+    
+    return jsonify(result), 200
 
 
 
