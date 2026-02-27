@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinFlow AI — Spaces Management</title>
+    <meta name="description" content="Manage your FinFlow AI spaces" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f5f7fa;
+            color: #1e3a4f;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: #fff;
+            border-bottom: 1px solid #eaecf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            z-index: 200;
+            box-shadow: 0 1px 8px rgba(30, 58, 79, 0.06);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #5a7080;
+            text-decoration: none;
+            transition: background 0.18s, color 0.18s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #f2f4f6;
+            color: #1e3a4f;
+            font-weight: 600;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 22px;
+            background: #eaecf0;
+            margin: 0 8px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-logoff {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #7a95a8;
+            background: none;
+            border: 1.5px solid #e2e6ea;
+            border-radius: 8px;
+            padding: 7px 16px;
+            cursor: pointer;
+        }
+
+        .btn-logoff:hover {
+            color: #c0392b;
+            border-color: #f5c6c2;
+            background: #fff5f5;
+        }
+
+        .nav-logo img {
+            height: 54px;
+            width: auto;
+            display: block;
+        }
+
+        /* ACCENT BAR */
+        .accent-bar {
+            height: 8px;
+            margin-top: 68px;
+            background: linear-gradient(135deg, #1e3a4f 0%, #2a5270 60%, #1e3a4f 100%);
+        }
+
+        /* PAGE */
+        .page {
+            padding: 20px 36px 40px;
+        }
+
+        .page-header {
+            margin-bottom: 16px;
+        }
+
+        .page-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1e3a4f;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: #8fa8b8;
+            margin-top: 2px;
+        }
+
+        /* CARDS */
+        .card {
+            background: #fff;
+            border: 1px solid #eaecf0;
+            border-radius: 14px;
+            padding: 14px 20px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            margin-bottom: 10px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #f0f3f5;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* FORMS */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #8fa8b8;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 9px 12px;
+            font-size: 13.5px;
+            border: 1.5px solid #e2e6ea;
+            border-radius: 8px;
+        }
+
+        .btn-add {
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #2a5270 0%, #1e3a4f 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .btn-add:hover {
+            opacity: 0.88;
+        }
+
+        /* TABLE */
+        .table-wrap {
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: #f7f9fb;
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #9ab0bf;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 1px solid #eaecf0;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f5f7f9;
+        }
+
+        tbody td {
+            padding: 10px 14px;
+            font-size: 13px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: #1e3a4f;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #a93226;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-links">
+            <a href="/home.html" class="nav-link"><span class="nav-icon">🏠</span><span>Home</span></a>
+            <div class="nav-divider"></div>
+            <a href="/clients.html" class="nav-link"><span class="nav-icon">👥</span><span>Clients</span></a>
+            <a href="/processes.html" class="nav-link"><span class="nav-icon">⚙️</span><span>Processes</span></a>
+            <div class="nav-divider"></div>
+            <a href="/space-setup.html" class="nav-link"><span class="nav-icon">🔧</span><span>Space Setup</span></a>
+            <div class="nav-divider"></div>
+            <a href="/spaces-management.html" class="nav-link active" id="nav-spaces-management"><span
+                    class="nav-icon">🏢</span><span>Spaces Management</span></a>
+        </div>
+        <div class="nav-right">
+            <button class="btn-logoff" onclick="logOff()">Log Off</button>
+            <div class="nav-logo">
+                <img src="assets/logo-inline-2.png" alt="FinFlow AI" />
+            </div>
+        </div>
+    </nav>
+    <div class="accent-bar"></div>
+
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">🏢 Spaces Management</h1>
+            <p class="page-subtitle">View existing spaces and create new ones (Master Admin only).</p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">➕ Create New Space</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="f-name">Space Name</label>
+                    <input id="f-name" type="text" placeholder="e.g. acme-corp" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label for="f-code">Space Code (2 Letters)</label>
+                    <input id="f-code" type="text" placeholder="e.g. AC" maxlength="2" autocomplete="off" />
+                </div>
+                <button class="btn-add" id="btn-add" onclick="createSpace()">+ Create Space</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📚 Registered Spaces</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Space Name</th>
+                            <th>Code</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spaces-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const currSpace = sessionStorage.getItem('finflow_space');
+        if (currSpace !== 'master-management') {
+            window.location.href = '/home.html';
+        }
+
+        function toast(msg, isError = false) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast show' + (isError ? ' error' : '');
+            clearTimeout(el._t);
+            el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
+        }
+
+        function logOff() {
+            sessionStorage.clear();
+            window.location.href = '/';
+        }
+
+        async function loadSpaces() {
+            try {
+                const res = await fetch('/api/spaces');
+                const spaces = await res.json();
+                const tbody = document.getElementById('spaces-body');
+                tbody.innerHTML = '';
+                spaces.forEach(s => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${s.id}</td><td><b>${s.name}</b></td><td>${s.code}</td>`;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                toast('Error loading spaces.', true);
+            }
+        }
+
+        async function createSpace() {
+            const name = document.getElementById('f-name').value.trim();
+            const code = document.getElementById('f-code').value.trim();
+            if (!name || !code) { toast('Name and code required.', true); return; }
+
+            const btn = document.getElementById('btn-add');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/spaces', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, code })
+                });
+                if (res.ok) {
+                    toast('Space created successfully!');
+                    document.getElementById('f-name').value = '';
+                    document.getElementById('f-code').value = '';
+                    loadSpaces();
+                } else {
+                    const d = await res.json();
+                    toast(d.error || 'Failed to create space.', true);
+                }
+            } catch (e) {
+                toast('Network error.', true);
+            }
+            btn.disabled = false;
+        }
+
+        loadSpaces();
+    </script>
+</body>
+
+</html>

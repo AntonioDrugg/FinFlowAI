@@ -64,6 +64,11 @@ def space_setup_page():
     return send_from_directory(WEB_DIR, "space-setup.html")
 
 
+@app.route("/spaces-management.html")
+def spaces_management_page():
+    return send_from_directory(WEB_DIR, "spaces-management.html")
+
+
 @app.route("/<path:filename>")
 def static_files(filename):
     return send_from_directory(WEB_DIR, filename)

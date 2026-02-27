@@ -468,6 +468,11 @@
             <a href="/space-setup.html" class="nav-link active" id="nav-space-setup">
                 <span class="nav-icon">🔧</span><span>Space Setup</span>
             </a>
+            <div class="nav-divider" id="sm-divider" style="display: none;"></div>
+            <a href="/spaces-management.html" class="nav-link" id="nav-spaces-management" style="display: none;">
+                <span class="nav-icon">🏢</span><span>Spaces Management</span>
+            </a>
+
         </div>
         <div class="nav-right">
             <button class="btn-logoff" onclick="logOff()">Log Off</button>
@@ -745,6 +750,15 @@
         });
 
         // ── Log Off ────────────────────────────────────────────────────────────────
+        
+        const currSpaceForMenu = sessionStorage.getItem('finflow_space');
+        if (currSpaceForMenu === 'master-management') {
+            const smLink = document.getElementById('nav-spaces-management');
+            const smDiv = document.getElementById('sm-divider');
+            if (smLink) smLink.style.display = 'flex';
+            if (smDiv) smDiv.style.display = 'block';
+        }
+
         function logOff() {
             sessionStorage.removeItem('finflow_name');
             sessionStorage.removeItem('finflow_space');
